@@ -1,0 +1,63 @@
+################################################################################
+# {{ ansible_managed }}
+################################################################################
+# {{ vm.host }} @{{ vm.org}}
+# {{ vm.description }}
+#-------------------------------------------------------------------------------
+# root password: {{ vm.root_pw }}
+# os:            {{ vm.os.type }} {{ vm.os.version }}
+#
+# ram:           {{ vm.memory }}
+# vcpus:         {{ vm.vcpus }}
+#
+# created at:    {{ vm.creation_date }}
+# auto boot:     {{ vm.auto_boot }}
+# storage type:  {{ vm.storage_type }}
+################################################################################
+
+name                    = {{ vm.host }}
+
+memory                  = {{ vm.memory }}
+vcpus                   = {{ vm.vcpus }}
+cpus                    = {{ vm.cpu_str }}
+
+vif                     = [ {% for interface in vm.interfaces -%}
+	'mac={{- interface.mac -}}
+	{%- if interface.ip is defined -%},ip={{- interface.ip -}}{%- endif -%}
+	{%- if interface.bridge is defined -%},bridge={{- interface.bridge -}}{%- endif -%}
+	{%- if interface.xen_str is defined -%},{{- interface.xen_str -}}{%- endif -%}'
+	{%- if not loop.last -%}, {% endif -%}{# check for last network interface #}
+{%- endfor %} ]
+
+disk                    = [ {% for disk in vm.disks -%}
+	'{{ disk }}'{%- if not loop.last -%}, {% endif -%}{# check for last disk #}
+{%- endfor %} ]
+
+{% if vm.builder != "hvm" -%}
+
+ramdisk                 = {% if vm.custom_initrd is defined -%}{{- vm.custom_initrd -}}{%- else -%}{{- vm_initrd -}}{%- endif %}
+kernel                  = {% if vm.custom_kernel is defined -%}{{- vm.custom_kernel -}}{%- else -%}{{- vm_kernel -}}{%- endif %}
+
+{%- else -%}
+
+builder                 = "hvm"
+	{%- if vm.spice|default(vm_default.spice) == true -%}
+
+# spice config see: http://xenbits.xen.org/docs/4.4-testing/man/xl.cfg.5.html#Spice-Graphics-Support
+spice                   = 1
+spicehost               = {{ vm.spicehost|default(vm_default.spicehost) }}
+spiceport               = {{ vm.spiceport|default(vm_default.spiceport) }}
+spicedisable_ticketing  = 0 {# login without password should be disabled in any case #}
+spicepasswd             = {{ vm.spicepasswd }}
+spiceagent_mouse        = {{ vm.mouse|default(vm_default.mouse) }}
+{#- spicevdagent is needed for clipboard sharing -#}
+spicevdagent            = {% if vm.share_clipboard == 1 -%}1{% else %}{{ vm.spicevdagent|default(vm_default.spicevdagent) }}{% endif %}
+spice_clipboard_sharing = {{ vm.share_clipboard|default(vm_default.share_clipboard) }}
+spiceusbredirection     = {{ vm.max_usb_redirections|default(vm_default.max_usb_redirections) }}
+	{%- else -%}
+spice                   = 0
+	{%- endif -%}
+{% endif %}
+{% for xen_option_key, xen_option_value in additonal_xen_options %}
+{{ xen_option_key }} = {{ xen_option_value }}
+{% endfor %}

@@ -1,0 +1,17 @@
+# xenvm.service
+# {{ ansible_managed }}
+[Unit]
+Description     = Manage given xen vm
+Documentation   = https://github.com/stuvusIT/xen_vm_management
+After           = xen
+After           = xenstored
+Wants           = xen.service
+Wants           = xenstored.service
+Wants           = %i.mount
+
+[Service]
+Type            = idle
+ExecStart       = {{ xen_path }} create {{ vm_config_path }}%i -F
+ExecStop        = {{ xen_path }} shutdown -F %i
+TimeoutStartSec = 10
+TimeoutStopSec  = 300

@@ -34,6 +34,6 @@
     dest: "{{ xen_vman_vm_config_path }}/{{ vm.org }}/{{ vm.host }}.cfg"
     group: root
     owner: root
-    mode: 'u=rw,g=r'
+    mode: 'u=rw,g=r,o-rwx'
     src: vm.conf.j2
 

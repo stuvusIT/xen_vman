@@ -11,7 +11,7 @@ Wants           = %i.mount
 
 [Service]
 Type            = idle
-ExecStart       = {{ xen_path }} create {{ vm_config_path }}%i -F
-ExecStop        = {{ xen_path }} shutdown -F %i
+ExecStart       = {{ xen_vman_xl_path }} create {{ xen_vman_vm_config_path }}/{{ vm.org }}/%i -F
+ExecStop        = {{ xen_vman_xl_path }} shutdown -F %i
 TimeoutStartSec = 10
 TimeoutStopSec  = 300

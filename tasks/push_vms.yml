@@ -1,0 +1,39 @@
+- name: "Create configuration diretory for {{ vm.org }} if needed"
+  file:
+    group: root
+    owner: root
+    mode: 'u=rwx,g=rx,o=rx'
+    path: "{{ xen_vman_vm_config_path }}/{{ vm.org }}/"
+    state: directory
+
+- name: "Test if vm {{ vm.host }} @{{ vm.org }} does exist"
+  stat:
+    path: "{{ xen_vman_vm_config_path }}/{{ vm.org }}/{{ vm.host }}.cfg"
+  register: vm_config_file
+  changed_when: False
+
+- name: "Set creation date for {{ vm.host }} @{{ vm.org }}"
+  set_fact:
+    creation_date: "{{ ansible_date_time.iso8601 }}"
+  when: not vm_config_file.stat.exists
+
+- name: "Get old creation date from {{ vm.host }} @{{ vm.org }} (1/2)"
+  shell: "sed -n 's/^# created at:    //p' {{ xen_vman_vm_config_path }}/{{ vm.org }}/{{ vm.host }}.cfg"
+  register: creation_date
+  when: vm_config_file.stat.exists
+  changed_when: False
+
+- name: "Get old creation date from {{ vm.host }} @{{ vm.org }} (2/2)"
+  set_fact:
+    creation_date: "{{ creation_date.stdout }}"
+  when: vm_config_file.stat.exists
+  changed_when: False
+
+- name: "Install xen config for {{ vm.host }} @{{ vm.org }}"
+  template:
+    dest: "{{ xen_vman_vm_config_path }}/{{ vm.org }}/{{ vm.host }}.cfg"
+    group: root
+    owner: root
+    mode: 'u=rw,g=r'
+    src: vm.conf.j2
+

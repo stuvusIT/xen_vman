@@ -1,0 +1,5 @@
+- name: Push configuration for vms
+  include_tasks: push_vms.yml
+  with_items: "{{xen_vman_vms}}"
+  loop_control:
+    loop_var: vm

@@ -1,12 +1,11 @@
-# xenvm.service
 # {{ ansible_managed }}
 [Unit]
-Description     = Manage given xen vm
-Documentation   = https://github.com/stuvusIT/xen_vm_management
-After           = xen
-After           = xenstored
-Wants           = xen.service
-Wants           = xenstored.service
+Description     = Xen VM for %i
+Documentation   = https://github.com/stuvusIT/xen_vman
+After           = xend.service
+After           = xenstored.service
+Requires        = xend.service
+Requires        = xenstored.service
 Wants           = %i.mount
 
 [Service]

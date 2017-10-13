@@ -1,0 +1,21 @@
+xen_vman_vms:                   []
+xen_vman_memory:                1024
+xen_vman_vcpus:                 2
+xen_vman_auto_boot:             1
+xen_vman_storage_type:          nfs
+xen_vman_cpu_str:               all,^1
+xen_vman_initrd:                /etc/xen/initrd.img
+xen_vman_kernel:                /etc/xen/kernel
+xen_vman_cmd:                   "root=/dev/xvda rootfstype=ext4 rw"
+xen_vman_spice:                 0
+xen_vman_spicehost:             0.0.0.0
+xen_vman_spiceport:             3100
+xen_vman_mouse:                 1
+xen_vman_spicevdagent:          1
+xen_vman_share_clipboard:       1
+xen_vman_max_usb_redirections:  4
+xen_vman_vm_config_path:        /etc/xen/vms
+xen_vman_xl_path:               /usr/bin/xl
+xen_vman_disks:                 []
+xen_vman_builder:               generic
+xen_vman_additonal_xen_options: []

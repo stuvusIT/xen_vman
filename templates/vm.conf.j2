@@ -15,7 +15,7 @@
 # storage type:  {{ vm.storage_type|default(xen_vman_storage_type) }}
 ################################################################################
 
-name                    = "{{ vm.host }}"
+name                    = "{{ vm.org }}-{{ vm.host }}"
 
 memory                  = {{ vm.memory|default(xen_vman_memory) }}
 vcpus                   = {{ vm.vcpus|default(xen_vman_vcpus) }}
@@ -37,7 +37,11 @@ disk                    = [ {% for disk in vm.disks|default(xen_vman_disks) -%}
 
 ramdisk                 = "{{ vm.initrd|default(xen_vman_initrd) }}"
 kernel                  = "{{ vm.kernel|default(xen_vman_kernel) }}"
+{% if vm.storage_type|default(xen_vman_storage_type) == "nfs" and vm.cmd is not defined %}
+cmdline                 = "root=/dev/nfs nfsroot={{ xen_vman_nfsroot_base }}{{ vm.org }}/{{ vm.host }}-root ip={{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('host/prefix')|default('dhcp') }}"
+{% else %}
 cmdline                 = "{{ vm.cmd|default(xen_vman_cmd) }}"
+{% endif %}
 
 {%- else -%}
 

@@ -6,11 +6,14 @@ After           = xend.service
 After           = xenstored.service
 Requires        = xend.service
 Requires        = xenstored.service
-Wants           = %i.mount
+Wants           = %I.mount
 
 [Service]
-Type            = idle
-ExecStart       = {{ xen_vman_xl_path }} create {{ xen_vman_vm_config_path }}/{{ vm.org }}/%i -F
+Type            = simple
+ExecStart       = {{ xen_vman_xl_path }} create {{ xen_vman_vm_config_path }}/%I -F
 ExecStop        = {{ xen_vman_xl_path }} shutdown -F %i
 TimeoutStartSec = 10
 TimeoutStopSec  = 300
+
+[Install]
+WantedBy=multi-user.target

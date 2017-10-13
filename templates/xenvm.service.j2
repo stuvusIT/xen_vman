@@ -6,7 +6,8 @@ After           = xend.service
 After           = xenstored.service
 Requires        = xend.service
 Requires        = xenstored.service
-Wants           = %I.mount
+
+Conflicts       = %I.mount
 
 [Service]
 Type            = simple

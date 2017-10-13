@@ -1,0 +1,7 @@
+- name: "Install systemd service file"
+  template:
+    dest: "/usr/lib/systemd/system/"
+    group: root
+    owner: root
+    mode: 'u=rw,g=r'
+    src: vm.conf.j2

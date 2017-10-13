@@ -12,11 +12,6 @@
   register: vm_config_file
   changed_when: False
 
-- name: "Set creation date for {{ vm.host }} @{{ vm.org }}"
-  set_fact:
-    creation_date: "{{ ansible_date_time.iso8601 }}"
-  when: not vm_config_file.stat.exists
-
 - name: "Get old creation date from {{ vm.host }} @{{ vm.org }} (1/2)"
   shell: "sed -n 's/^# created at:    //p' {{ xen_vman_vm_config_path }}/{{ vm.org }}/{{ vm.host }}.cfg"
   register: creation_date
@@ -28,6 +23,11 @@
     creation_date: "{{ creation_date.stdout }}"
   when: vm_config_file.stat.exists
   changed_when: False
+
+- name: "Set creation date for {{ vm.host }} @{{ vm.org }}"
+  set_fact:
+    creation_date: "{{ ansible_date_time.iso8601 }}"
+  when: not vm_config_file.stat.exists
 
 - name: "Install xen config for {{ vm.host }} @{{ vm.org }}"
   template:

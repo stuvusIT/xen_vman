@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+[Unit]
+Description         = Manage iscsi dev for %i
+Documentation       = https://github.com/stuvusIT/xen_vman
+ConditionPathExists = {{ xen_vman_vm_config_path }}/%I.cfg
+
+[Service]
+Type                = oneshot
+RemainAfterExit     = yes
+ExecStart           = {{ xen_vman_iscsiadm_path }} -m node -T "{{ xen_vman_iscsi_base_wwn }}:%i" --login -p {{ xen_vman_iscsi_server }}
+ExecStop            = {{ xen_vman_iscsiadm_path }} -m node -T "{{ xen_vman_iscsi_base_wwn }}:%i" --logout -p {{ xen_vman_iscsi_server }}
+TimeoutStartSec     = {{ xen_vman_iscsi_login_timeout }}
+TimeoutStopSec      = {{ xen_vman_iscsi_logout_timeout }}
+
+[Install]
+WantedBy=multi-user.target

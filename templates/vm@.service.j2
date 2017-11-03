@@ -1,0 +1,22 @@
+# {{ ansible_managed }}
+[Unit]
+Description             = Xen VM for %i
+Documentation           = https://github.com/stuvusIT/xen_vman
+After                   = xend.service
+After                   = xenstored.service
+Requires                = xend.service
+Requires                = xenstored.service
+Wants                   = vm_iscsi@%I.service
+Conflicts               = vm_mount@%I.service
+ConditionPathExists     = {{ xen_vman_vm_config_path }}/%I.cfg
+ConditionVirtualization = xen
+
+[Service]
+Type                    = forking
+ExecStart               = {{ xen_vman_xl_path }} -v create {{ xen_vman_vm_config_path }}/%I.cfg
+ExecStop                = {{ xen_vman_xl_path }} -v shutdown -F -w %i
+TimeoutStartSec         = {{ xen_vman_start_timeout }}
+TimeoutStopSec          = {{ xen_vman_stop_timeout }}
+
+[Install]
+WantedBy=multi-user.target

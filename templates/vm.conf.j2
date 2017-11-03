@@ -23,22 +23,24 @@ cpus                    = "{{ vm.cpu_str|default(xen_vman_cpu_str) }}"
 
 vif                     = [ {% for interface in vm.interfaces -%}
 	'mac={{- interface.mac -}}
-	{%- if interface.ip is defined -%},ip={{- interface.ip -}}{%- endif -%}
+	{%- if interface.ip is defined -%},ip={{- interface.ip|ipaddr('address') -}}{%- endif -%}
 	{%- if interface.bridge is defined -%},bridge={{- interface.bridge -}}{%- endif -%}
 	{%- if interface.xen_str is defined -%},{{- interface.xen_str -}}{%- endif -%}'
 	{%- if not loop.last -%}, {% endif -%}{# check for last network interface #}
 {%- endfor %} ]
 
 disk                    = [ {% for disk in vm.disks|default(xen_vman_disks) -%}
-	'{{ disk }}'{%- if not loop.last -%}, {% endif -%}{# check for last disk #}
-{%- endfor %} ]
+                          '{{ disk }}'{%- if not loop.last -%}, {% endif -%}{# check for last disk #}
+                          {%- endfor %} ]
 
 {% if vm.builder|default(xen_vman_builder) != "hvm" -%}
 
 ramdisk                 = "{{ vm.initrd|default(xen_vman_initrd) }}"
 kernel                  = "{{ vm.kernel|default(xen_vman_kernel) }}"
 {% if vm.storage_type|default(xen_vman_storage_type) == "nfs" and vm.cmd is not defined %}
-cmdline                 = "root=/dev/nfs nfsroot={{ xen_vman_nfsroot_base }}{{ vm.org }}/{{ vm.host }}-root ip={{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('host/prefix')|default('dhcp') }}"
+cmdline                 = "root=/dev/nfs nfsroot=
+                           {{- xen_vman_nfsroot_base }}{{ vm.org }}/{{ vm.host }}-root ip=
+                           {{- vm.connection_ip|default(vm['interfaces'][0]['ip']|ipaddr('address/prefix'))|default('dhcp') }}"
 {% else %}
 cmdline                 = "{{ vm.cmd|default(xen_vman_cmd) }}"
 {% endif %}
@@ -62,6 +64,10 @@ spiceusbredirection     = {{ vm.max_usb_redirections|default(xen_vman_max_usb_re
 	{%- else -%}
 spice                   = 0
 	{%- endif -%}
+{% endif %}
+{% if additonal_xen_options is defined %}
+
+
 {% endif %}
 {% for xen_option_key, xen_option_value in additonal_xen_options|default(xen_vman_additonal_xen_options) %}
 {{ xen_option_key }} = {{ xen_option_value }}

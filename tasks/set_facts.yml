@@ -1,0 +1,21 @@
+- name: Get correct path for xl if needed
+  shell: which xl
+  register: xen_vman_xl_path
+  when: xen_vman_xl_path is not defined
+  changed_when: False
+
+- set_fact:
+    xen_vman_xl_path: "{{ xen_vman_xl_path.stdout }}"
+  when: xen_vman_xl_path.stdout is defined
+  changed_when: False
+
+- name: Get correct path for iscsiadm if needed
+  shell: which iscsiadm
+  register: xen_vman_iscsiadm_path
+  when: xen_vman_iscsiadm_path is not defined
+  changed_when: False
+
+- set_fact:
+    xen_vman_iscsiadm_path: "{{ xen_vman_iscsiadm_path.stdout }}"
+  when: xen_vman_iscsiadm_path.stdout is defined
+  changed_when: False

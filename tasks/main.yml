@@ -1,5 +1,10 @@
-- name: Push configuration for vms
-  include_tasks: push_vms.yml
+- include_tasks: install_packages.yml
+- name: Collect all necessary facts and set them if needed
+  include_tasks: set_facts.yml
+- name: Install systemd service files
+  include_tasks: systemd.yml
+- name: Install all vms (main task)
+  include_tasks: install_all_vms.yml
   with_items: "{{xen_vman_vms}}"
   loop_control:
     loop_var: vm

@@ -1,7 +1,23 @@
-- name: "Install systemd service file"
+- name: Make sure systemd unit file directory does exist
+  file:
+    path: /lib/systemd/system/
+    mode: "u=rwX,g=rX,o=rX"
+    owner: root
+    group: root
+    state: directory
+
+- name: Install systemd service file (vm@.service)
   template:
-    dest: "/usr/lib/systemd/system/"
+    dest: "/lib/systemd/system/vm@.service"
     group: root
     owner: root
-    mode: 'u=rw,g=r'
-    src: vm.conf.j2
+    mode: 'u=rw,g=r,o=r'
+    src: vm@.service.j2
+
+- name: Install systemd service file (vm_iscsi@.service)
+  template:
+    dest: "/lib/systemd/system/vm_iscsi@.service"
+    group: root
+    owner: root
+    mode: 'u=rw,g=r,o=r'
+    src: vm_iscsi@.service.j2

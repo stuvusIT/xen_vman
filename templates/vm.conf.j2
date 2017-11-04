@@ -29,9 +29,13 @@ vif                     = [ {% for interface in vm.interfaces -%}
 	{%- if not loop.last -%}, {% endif -%}{# check for last network interface #}
 {%- endfor %} ]
 
-disk                    = [ {% for disk in vm.disks|default(xen_vman_disks) -%}
-                          '{{ disk }}'{%- if not loop.last -%}, {% endif -%}{# check for last disk #}
-                          {%- endfor %} ]
+disk                    = [ {% if vm.storage_type|default(xen_vman_storage_type) == "iscsi" -%}
+                              '/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}-{{ vm.org }}-{{ vm.host }}-lun-0'
+                              {%- if vm.storage_type|default(xen_vman_storage_type)|length > 0 -%}, {% endif -%}
+                            {%- endif -%}
+                            {%- for disk in vm.disks|default(xen_vman_disks) -%}
+                              '{{ disk }}'{%- if not loop.last -%}, {% endif -%}{# check for last disk #}
+                            {%- endfor %} ]
 
 {% if vm.builder|default(xen_vman_builder) != "hvm" -%}
 
@@ -54,7 +58,7 @@ builder                 = "hvm"
 spice                   = 1
 spicehost               = "{{ vm.spicehost|default(xen_vman_spicehost) }}"
 spiceport               = "{{ vm.spiceport|default(xen_vman_spiceport) }}"
-spicedisable_ticketing  = 0 {# login without password should be disabled in any case #}
+spicedisable_ticketing  = 0 {#- login without password should be disabled in any case #}
 spicepasswd             = "{{ vm.spicepasswd }}"
 spiceagent_mouse        = {{ vm.mouse|default(xen_vman_mouse) }}
 {#- spicevdagent is needed for clipboard sharing -#}

@@ -2,7 +2,8 @@
 [Unit]
 Description         = Manage iscsi dev for %i
 Documentation       = https://github.com/stuvusIT/xen_vman
-ConditionPathExists = {{ xen_vman_vm_config_path }}/%I.cfg
+ConditionPathExists = {{ xen_vman_vm_config_path }}/%i.cfg
+ConditionPathExists = {{ xen_vman_vm_config_path }}/.iscsi/%i
 
 [Service]
 Type                = oneshot
@@ -13,4 +14,4 @@ TimeoutStartSec     = {{ xen_vman_iscsi_login_timeout }}
 TimeoutStopSec      = {{ xen_vman_iscsi_logout_timeout }}
 
 [Install]
-WantedBy=multi-user.target
+WantedBy            = multi-user.target

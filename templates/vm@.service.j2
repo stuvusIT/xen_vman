@@ -6,14 +6,15 @@ After                   = xend.service
 After                   = xenstored.service
 Requires                = xend.service
 Requires                = xenstored.service
-Wants                   = vm_iscsi@%I.service
-Conflicts               = vm_mount@%I.service
-ConditionPathExists     = {{ xen_vman_vm_config_path }}/%I.cfg
+Requires                = vm_iscsi@%i.service
+After                   = vm_iscsi@%i.service
+Conflicts               = vm_mount@%i.service
+ConditionPathExists     = {{ xen_vman_vm_config_path }}/%i.cfg
 ConditionVirtualization = xen
 
 [Service]
 Type                    = forking
-ExecStart               = {{ xen_vman_xl_path }} -v create {{ xen_vman_vm_config_path }}/%I.cfg
+ExecStart               = {{ xen_vman_xl_path }} -v create {{ xen_vman_vm_config_path }}/%i.cfg
 ExecStop                = {{ xen_vman_xl_path }} -v shutdown -F -w %i
 TimeoutStartSec         = {{ xen_vman_start_timeout }}
 TimeoutStopSec          = {{ xen_vman_stop_timeout }}

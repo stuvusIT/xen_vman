@@ -1,0 +1,91 @@
+#!/bin/bash
+# {{ ansible_managed }}
+
+function mount_iscsi() {
+	local blk_dev="/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:$vm-lun-0"
+	# login into iscsi for requested vm, needed for standalone starts(via script), do not so if started via systemd
+	[ ! -b "$blk_dev" -a -z "$INVOCATION_ID" ] && {
+		touch /tmp/.$vm.iscsi_started_by_mount_script
+		systemctl start vm_iscsi@$vm.service
+  	}
+	timeout=$(({{ xen_vman_iscsi_login_timeout }}*2))
+	while [ ! -b "$blk_dev" ]; do
+	  sleep 0.5
+	  timeout=$((timeout-1))
+	done
+	[ "$timeout" -le 0 ] && { echo "ERROR:   Iscsi login has reached timeout"; exit 1; }
+	mount -v -o "defaults,rw" "$blk_dev" "$mount_path"
+}
+
+function mount_nfs() {
+	mount -v "{{ xen_vman_nfsroot_base }}$vm-root" "$mount_path"
+}
+
+function detect_storage_type() {
+	sed -n 's/# storage type:[ ]\+//p' "$config_path"
+}
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+	case $1 in
+		"-m" | "--mount")
+			action="mount"
+			;;
+		"-u" | "--umount")
+			action="umount"
+			;;
+		"-s" | "--systemd")
+			shift; vm="$1"
+			;;
+		"-o" | "--org")
+			shift; org="$1"
+			;;
+		"-h" | "--host")
+			shift; host="$1"
+			;;
+		"-p" | "--mount_path")
+			shift; mount_path="$1"
+			;;
+		*)
+			echo "WARNING: Unknown option '$1'"
+			;;
+	esac
+	shift
+done
+
+config_path="{{ xen_vman_vm_config_path }}/$vm.cfg"
+
+[ -n "$org" -a -n "$host" ]        &&   vm="$org-$host"  # vm is specified by org and host
+[ -z "$vm" ]                       && { echo "ERROR:   No vm specified"; exit 1; }  # Exit if no vm is specified
+[ -f "$config_path" ]              || { echo "ERROR:   Invalid vm specified ($vm)"; exit 1; }  # Exit if vm is not found
+[ -z "$action" ]                   && { echo "ERROR:   Exactly one of \"-m\" or \"-u\" must be specified"; exit 1; }
+systemctl is-active vm@$vm.service && { echo "ERROR:   Can't mount running vm ($vm)"; exit 1; }
+
+: ${mount_path:=/mnt/vms/$vm}
+
+mkdir -pv "$mount_path"
+
+err=0
+case "$action $(detect_storage_type)" in
+	"mount nfs")
+		mount_nfs && exit 0 || err=$?
+		echo "ERROR:   Failed to mount nfs storage for '$vm'"
+		;;
+	"mount iscsi")
+		mount_iscsi && exit 0 || err=$?
+		echo "ERROR:   Failed to mount iscsi storage for '$vm'"
+		;;
+	"umount iscsi" |\
+	"umount nfs")
+		umount "$mount_path" || err=$?
+		[ -f "/tmp/.$vm.iscsi_started_by_mount_script" ] && { # logout iscsi, when started by script (see func:mount_iscsi for future reference)
+			systemctl stop vm_iscsi@$vm.service
+			rm -v "/tmp/.$vm.iscsi_started_by_mount_script"
+		}
+		rmdir "$mount_path"
+		;;
+	*)
+		echo "ERROR:   Invalid storage backend type ($(detect_storage_type))"; err=1
+		;;
+esac
+exit $err

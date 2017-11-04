@@ -8,7 +8,7 @@
 
 - name: Install systemd service file (vm@.service)
   template:
-    dest: "/lib/systemd/system/vm@.service"
+    dest: /lib/systemd/system/vm@.service
     group: root
     owner: root
     mode: 'u=rw,g=r,o=r'
@@ -16,8 +16,32 @@
 
 - name: Install systemd service file (vm_iscsi@.service)
   template:
-    dest: "/lib/systemd/system/vm_iscsi@.service"
+    dest: /lib/systemd/system/vm_iscsi@.service
     group: root
     owner: root
     mode: 'u=rw,g=r,o=r'
     src: vm_iscsi@.service.j2
+
+- name: Create listing folder for all vms requiring iscsi(needed for selective vm_iscsi@.service starts)
+  file:
+    path: "{{ xen_vman_vm_config_path }}/.iscsi/"
+    state: directory
+    group: root
+    owner: root
+    mode: 'u=rwX,g=rX,o=rX'
+
+- name: Install mount helper script
+  template:
+    dest: /etc/xen/scripts/mount_vm.sh
+    group: root
+    owner: root
+    mode: 'u=rwx,g=rx,o-rwx'
+    src: mount_vm.sh.j2
+
+- name: Install systemd service file (vm_mount@.service)
+  template:
+    dest: /lib/systemd/system/vm_mount@.service
+    group: root
+    owner: root
+    mode: 'u=rw,g=r,o=r'
+    src: vm_mount@.service.j2

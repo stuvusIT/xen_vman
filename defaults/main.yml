@@ -1,7 +1,6 @@
 xen_vman_vms:                   []
 xen_vman_default_memory:        1024
 xen_vman_default_vcpus:         2
-xen_vman_auto_boot:             1
 xen_vman_storage_type:          nfs
 xen_vman_cpu_str:               all,^1
 xen_vman_spice:                 0
@@ -22,4 +21,5 @@ xen_vman_iscsi_logout_timeout:  40
 xen_vman_mount_timeout:         20
 xen_vman_umount_timeout:        20
 xen_vman_default_filesystem:    ext4
+xen_vman_auto_boot:             True
 xen_vman_boot_after_creation:   True

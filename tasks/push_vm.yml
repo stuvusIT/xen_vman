@@ -43,3 +43,8 @@
     path: "{{ xen_vman_vm_config_path }}/.iscsi/{{ vm.org }}-{{ vm.host }}"
     state: absent
   when: vm.storage_type|default(xen_vman_storage_type) != "iscsi"
+
+- name: Set vm auto boot mode
+  systemd:
+    name: vm@{{ vm.org }}-{{ vm.host }}.service
+    enabled: "{{ vm.auto_boot|default(xen_vman_auto_boot) }}"

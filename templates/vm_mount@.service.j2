@@ -12,8 +12,8 @@ Type                    = oneshot
 RemainAfterExit         = yes
 ExecStart               = /etc/xen/scripts/mount_vm.sh -s %i -m
 ExecStop                = /etc/xen/scripts/mount_vm.sh -s %i -u
-TimeoutStartSec         = 20
-TimeoutStopSec          = 20
+TimeoutStartSec         = {{ [ xen_vman_mount_timeout, xen_vman_iscsi_login_timeout ] | max }}
+TimeoutStopSec          = {{ xen_vman_umount_timeout }}
 
 [Install]
 WantedBy                = multi-user.target

@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 [Unit]
-Description         = Manage iscsi dev for %i
+Description         = Manage iSCSI dev for %i
 Documentation       = https://github.com/stuvusIT/xen_vman
 ConditionPathExists = {{ xen_vman_vm_config_path }}/%i.cfg
 ConditionPathExists = {{ xen_vman_vm_config_path }}/.iscsi/%i

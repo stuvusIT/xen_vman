@@ -6,8 +6,8 @@
 #-------------------------------------------------------------------------------
 # os:            {{ vm.os.type }} {{ vm.os.version }}
 #
-# ram:           {{ vm.memory|default(xen_vman_memory) }}
-# vcpus:         {{ vm.vcpus|default(xen_vman_vcpus) }}
+# ram:           {{ vm.memory|default(xen_vman_default_memory) }}
+# vcpus:         {{ vm.vcpus|default(xen_vman_default_vcpus) }}
 #
 # created at:    {{ creation_date }}
 # auto boot:     {{ vm.auto_boot|default(xen_vman_auto_boot) }}
@@ -16,8 +16,8 @@
 
 name                    = "{{ vm.org }}-{{ vm.host }}"
 
-memory                  = {{ vm.memory|default(xen_vman_memory) }}
-vcpus                   = {{ vm.vcpus|default(xen_vman_vcpus) }}
+memory                  = {{ vm.memory|default(xen_vman_default_memory) }}
+vcpus                   = {{ vm.vcpus|default(xen_vman_default_vcpus) }}
 cpus                    = "{{ vm.cpu_str|default(xen_vman_cpu_str) }}"
 
 vif                     = [ {% for interface in vm.interfaces -%}

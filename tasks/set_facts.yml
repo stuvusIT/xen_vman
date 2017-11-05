@@ -4,7 +4,8 @@
   when: xen_vman_xl_path is not defined
   changed_when: False
 
-- set_fact:
+- name: Set correct path for xl if needed
+  set_fact:
     xen_vman_xl_path: "{{ xen_vman_xl_path.stdout }}"
   when: xen_vman_xl_path.stdout is defined
   changed_when: False
@@ -15,7 +16,8 @@
   when: xen_vman_iscsiadm_path is not defined
   changed_when: False
 
-- set_fact:
+- name: Set correct path for iscsiadm if needed
+  set_fact:
     xen_vman_iscsiadm_path: "{{ xen_vman_iscsiadm_path.stdout }}"
   when: xen_vman_iscsiadm_path.stdout is defined
   changed_when: False

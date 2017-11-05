@@ -5,6 +5,6 @@
   include_tasks: systemd.yml
 - name: Install all vms (main task)
   include_tasks: install_all_vms.yml
-  with_items: "{{xen_vman_vms}}"
+  with_items: "{{ xen_vman_vms }}"
   loop_control:
     loop_var: vm

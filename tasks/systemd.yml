@@ -14,7 +14,7 @@
     mode: 'u=rw,g=r,o=r'
     src: vm_iscsi@.service.j2
 
-- name: Create listing folder for all vms requiring iscsi(needed for selective vm_iscsi@.service starts)
+- name: Create listing folder for all vms requiring iSCSI (needed for selective vm_iscsi@.service starts)
   file:
     path: "{{ xen_vman_vm_config_path }}/.iscsi/"
     state: directory

@@ -1,6 +1,6 @@
-- name: Push vm configuration for {{ vm.host }} @{{ vm.org }}
+- name: Push VM configuration for {{ vm.host }} @{{ vm.org }}
   include_tasks: push_vm.yml
 
-- name: Install vm {{ vm.host }} @{{ vm.org }} if needed
+- name: Install VM {{ vm.host }} @{{ vm.org }} if needed
   include_tasks: install_system.yml
   when: not vm_config_file.stat.exists

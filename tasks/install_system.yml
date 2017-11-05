@@ -1,4 +1,4 @@
-- name: Make sure iscsi device for {{ vm.host }} @{{ vm.org }} is logged in
+- name: Make sure iSCSI device for {{ vm.host }} @{{ vm.org }} is logged in
   systemd:
     name: vm_iscsi@{{ vm.org }}/{{ vm.host }}.service
     state: started
@@ -8,12 +8,11 @@
   shell: mkfs.{{ vm.filesystem|default(xen_vman_default_filesystem) }} "/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:{{ vm.org }}-{{ vm.host }}-lun-0"
   when: vm.storage_type|default(xen_vman_storage_type) == "iscsi"
 
-- name: Make sure vm root is mounted
+- name: Make sure VM root is mounted
   systemd:
     name: vm_mount@{{ vm.org }}/{{ vm.host }}.service
     state: started
 
-# TODO: make system installation async
 - name: Install {{ vm.os.type }} {{ vm.os.version }} at {{ vm.host }} @{{ vm.org }}
   shell: debootstrap --include openssh-server,python {{ vm.os.version }} /mnt/vms/{{ vm.org }}-{{ vm.host }}
   when: vm.os.type == "ubuntu"
@@ -30,7 +29,7 @@
     group: "{{ ansible_user }}"
     state: directory
 
-- name: Deploy current public key for {{ ansible_user }} at new vm {{ vm.host }} @{{ vm.org }}
+- name: Deploy current public key for {{ ansible_user }} at new VM {{ vm.host }} @{{ vm.org }}
   copy:
     src: "{{ ansible_ssh_private_key_file }}.pub"
     dest: "/mnt/vms/{{ vm.org }}-{{ vm.host }}/home/{{ ansible_user }}/.ssh/authorized_keys"
@@ -61,7 +60,7 @@
     state: stopped
   when: vm.storage_type|default(xen_vman_storage_type) == "iscsi" and vm.boot_after_creation|default(xen_vman_boot_after_creation) != True
 
-- name: Boot new vm
+- name: Boot new VM
   systemd:
     name: vm@{{ vm.org }}-{{ vm.host }}.service
     state: started

@@ -29,8 +29,8 @@ vif                     = [ {% for interface in vm.interfaces -%}
 {%- endfor %} ]
 
 disk                    = [ {% if vm.storage_type|default(xen_vman_storage_type) == "iscsi" -%}
-                              '/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}-{{ vm.org }}-{{ vm.host }}-lun-0'
-                              {%- if vm.storage_type|default(xen_vman_storage_type)|length > 0 -%}, {% endif -%}
+                              '/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:{{ vm.org }}-{{ vm.host }}-lun-0,raw,xvda,rw'
+                              {%- if vm.disk|default(xen_vman_disks)|length > 0 -%}, {% endif -%}
                             {%- endif -%}
                             {%- for disk in vm.disks|default(xen_vman_disks) -%}
                               '{{ disk }}'{%- if not loop.last -%}, {% endif -%}{# check for last disk #}

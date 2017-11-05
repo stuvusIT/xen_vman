@@ -1,14 +1,6 @@
-- name: Make sure systemd unit file directory does exist
-  file:
-    path: /lib/systemd/system/
-    mode: "u=rwX,g=rX,o=rX"
-    owner: root
-    group: root
-    state: directory
-
 - name: Install systemd service file (vm@.service)
   template:
-    dest: /lib/systemd/system/vm@.service
+    dest: /etc/systemd/system/vm@.service
     group: root
     owner: root
     mode: 'u=rw,g=r,o=r'
@@ -16,7 +8,7 @@
 
 - name: Install systemd service file (vm_iscsi@.service)
   template:
-    dest: /lib/systemd/system/vm_iscsi@.service
+    dest: /etc/systemd/system/vm_iscsi@.service
     group: root
     owner: root
     mode: 'u=rw,g=r,o=r'
@@ -40,7 +32,7 @@
 
 - name: Install systemd service file (vm_mount@.service)
   template:
-    dest: /lib/systemd/system/vm_mount@.service
+    dest: /etc/systemd/system/vm_mount@.service
     group: root
     owner: root
     mode: 'u=rw,g=r,o=r'

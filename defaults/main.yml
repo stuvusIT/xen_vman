@@ -4,7 +4,6 @@ xen_vman_vcpus:                 2
 xen_vman_auto_boot:             1
 xen_vman_storage_type:          nfs
 xen_vman_cpu_str:               all,^1
-xen_vman_cmd:                   "root=/dev/xvda rootfstype=ext4 rw"
 xen_vman_spice:                 0
 xen_vman_spicehost:             0.0.0.0
 xen_vman_spiceport:             3100
@@ -21,3 +20,4 @@ xen_vman_stop_timeout:          300
 xen_vman_iscsi_login_timeout:   40
 xen_vman_iscsi_logout_timeout:  40
 xen_vman_default_filesystem:    ext4
+xen_vman_boot_after_creation:   True

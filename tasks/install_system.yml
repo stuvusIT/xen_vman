@@ -60,3 +60,14 @@
     name: vm_iscsi@{{ vm.org }}-{{ vm.host }}.service
     state: stopped
   when: vm.storage_type|default(xen_vman_storage_type) == "iscsi"
+
+- name: Set vm auto boot mode
+  systemd:
+    name: vm@{{ vm.org }}-{{ vm.host }}.service
+    enabled: "{{ vm.auto_boot|default(xen_vman_auto_boot) }}"
+
+- name: Boot new vm
+  systemd:
+    name: vm@{{ vm.org }}-{{ vm.host }}.service
+    state: started
+  when: vm.boot_after_creation|default(xen_vman_boot_after_creation) == True

@@ -21,7 +21,7 @@
   changed_when: False
 
 - name: Get current running kernel
-  shell: uname -v
+  shell: uname -r
   register: xen_vman_host_kernel
   changed_when: False
 

@@ -10,15 +10,15 @@
 # vcpus:         {{ vm.vcpus|default(xen_vman_default_vcpus) }}
 #
 # created at:    {{ creation_date }}
-# auto boot:     {{ vm.auto_boot|default(xen_vman_auto_boot) }}
-# storage type:  {{ vm.storage_type|default(xen_vman_storage_type) }}
+# auto boot:     {{ vm.auto_boot|default(xen_vman_default_auto_boot) }}
+# storage type:  {{ vm.storage_type|default(xen_vman_default_storage_type) }}
 ################################################################################
 
 name                    = "{{ vm.org }}-{{ vm.host }}"
 
 memory                  = {{ vm.memory|default(xen_vman_default_memory) }}
 vcpus                   = {{ vm.vcpus|default(xen_vman_default_vcpus) }}
-cpus                    = "{{ vm.cpu_str|default(xen_vman_cpu_str) }}"
+cpus                    = "{{ vm.cpu_str|default(xen_vman_default_cpu_str) }}"
 
 vif                     = [ {% for interface in vm.interfaces -%}
 	'mac={{- interface.mac -}}
@@ -28,23 +28,23 @@ vif                     = [ {% for interface in vm.interfaces -%}
 	{%- if not loop.last -%}, {% endif -%}{# check for last network interface #}
 {%- endfor %} ]
 
-disk                    = [ {% if vm.storage_type|default(xen_vman_storage_type) == "iscsi" -%}
+disk                    = [ {% if vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" -%}
                               '/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:{{ vm.org }}-{{ vm.host }}-lun-0,raw,xvda,rw'
-                              {%- if vm.disk|default(xen_vman_disks)|length > 0 -%}, {% endif -%}
+                              {%- if vm.disk|default(xen_vman_default_disks)|length > 0 -%}, {% endif -%}
                             {%- endif -%}
-                            {%- for disk in vm.disks|default(xen_vman_disks) -%}
+                            {%- for disk in vm.disks|default(xen_vman_default_disks) -%}
                               '{{ disk }}'{%- if not loop.last -%}, {% endif -%}{# check for last disk #}
                             {%- endfor %} ]
 
-{% if vm.builder|default(xen_vman_builder) != "hvm" -%}
+{% if vm.builder|default(xen_vman_default_builder) != "hvm" -%}
 
 ramdisk                 = "{{ vm.initrd|default(xen_vman_initrd) }}"
 kernel                  = "{{ vm.kernel|default(xen_vman_kernel) }}"
-{% if vm.storage_type|default(xen_vman_storage_type) == "nfs" and vm.cmd is not defined %}
+{% if vm.storage_type|default(xen_vman_default_storage_type) == "nfs" and vm.cmd is not defined %}
 cmdline                 = "root=/dev/nfs nfsroot=
                            {{- xen_vman_nfsroot_base }}{{ vm.org }}/{{ vm.host }}-root ip=
                            {{- vm.connection_ip|default(vm['interfaces'][0]['ip']|ipaddr('address/prefix'))|default('dhcp') }}"
-{% elif vm.storage_type|default(xen_vman_storage_type) == "iscsi" and vm.cmd is not defined %}
+{% elif vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" and vm.cmd is not defined %}
 cmdline                 = "root=/dev/xvda rootfstype={{ vm.filesystem|default(xen_vman_default_filesystem) }} rw"
 {% else %}
 cmdline                 = "{{ vm.cmd|default(xen_vman_cmd) }}"
@@ -53,19 +53,19 @@ cmdline                 = "{{ vm.cmd|default(xen_vman_cmd) }}"
 {%- else -%}
 
 builder                 = "hvm"
-	{%- if vm.spice|default(xen_vman_spice) == true -%}
+	{%- if vm.spice|default(xen_vman_default_spice) == true -%}
 
 # spice config see: http://xenbits.xen.org/docs/4.4-testing/man/xl.cfg.5.html#Spice-Graphics-Support
 spice                   = 1
-spicehost               = "{{ vm.spicehost|default(xen_vman_spicehost) }}"
-spiceport               = "{{ vm.spiceport|default(xen_vman_spiceport) }}"
+spicehost               = "{{ vm.spicehost|default(xen_vman_default_spicehost) }}"
+spiceport               = "{{ vm.spiceport|default(xen_vman_default_spiceport) }}"
 spicedisable_ticketing  = 0 {#- login without password should be disabled in any case #}
 spicepasswd             = "{{ vm.spicepasswd }}"
-spiceagent_mouse        = {{ vm.mouse|default(xen_vman_mouse) }}
+spiceagent_mouse        = {{ vm.mouse|default(xen_vman_default_mouse) }}
 {#- spicevdagent is needed for clipboard sharing -#}
-spicevdagent            = {% if vm.share_clipboard == 1 -%}1{% else %}{{ vm.spicevdagent|default(xen_vman_spicevdagent) }}{% endif %}
-spice_clipboard_sharing = {{ vm.share_clipboard|default(xen_vman_share_clipboard) }}
-spiceusbredirection     = {{ vm.max_usb_redirections|default(xen_vman_max_usb_redirections) }}
+spicevdagent            = {% if vm.share_clipboard == 1 -%}1{% else %}{{ vm.spicevdagent|default(xen_vman_default_spicevdagent) }}{% endif %}
+spice_clipboard_sharing = {{ vm.share_clipboard|default(xen_vman_default_share_clipboard) }}
+spiceusbredirection     = {{ vm.max_usb_redirections|default(xen_vman_default_max_usb_redirections) }}
 	{%- else -%}
 spice                   = 0
 	{%- endif -%}
@@ -74,6 +74,6 @@ spice                   = 0
 
 
 {% endif %}
-{% for xen_option_key, xen_option_value in additonal_xen_options|default(xen_vman_additonal_xen_options) %}
+{% for xen_option_key, xen_option_value in additonal_xen_options|default(xen_vman_default_additonal_xen_options) %}
 {{ xen_option_key }} = {{ xen_option_value }}
 {% endfor %}

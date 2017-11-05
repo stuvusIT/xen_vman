@@ -36,15 +36,15 @@
     owner: root
     mode: 'u=rwx,g=rw,o=r'
     src: iscsi_dev.j2
-  when: vm.storage_type|default(xen_vman_storage_type) == "iscsi"
+  when: vm.storage_type|default(xen_vman_default_storage_type) == "iscsi"
 
 - name: "Untag VM storage type as iSCSI"
   file:
     path: "{{ xen_vman_vm_config_path }}/.iscsi/{{ vm.org }}-{{ vm.host }}"
     state: absent
-  when: vm.storage_type|default(xen_vman_storage_type) != "iscsi"
+  when: vm.storage_type|default(xen_vman_default_storage_type) != "iscsi"
 
 - name: Set VM auto boot mode
   systemd:
     name: vm@{{ vm.org }}-{{ vm.host }}.service
-    enabled: "{{ vm.auto_boot|default(xen_vman_auto_boot) }}"
+    enabled: "{{ vm.auto_boot|default(xen_vman_default_auto_boot) }}"

@@ -2,11 +2,11 @@
   systemd:
     name: vm_iscsi@{{ vm.org }}/{{ vm.host }}.service
     state: started
-  when: vm.storage_type|default(xen_vman_storage_type) == "iscsi"
+  when: vm.storage_type|default(xen_vman_default_storage_type) == "iscsi"
 
 - name: Format root storage for {{ vm.host }} @{{ vm.org }}
   shell: mkfs.{{ vm.filesystem|default(xen_vman_default_filesystem) }} "/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:{{ vm.org }}-{{ vm.host }}-lun-0"
-  when: vm.storage_type|default(xen_vman_storage_type) == "iscsi"
+  when: vm.storage_type|default(xen_vman_default_storage_type) == "iscsi"
 
 - name: Make sure VM root is mounted
   systemd:
@@ -58,10 +58,10 @@
   systemd:
     name: vm_iscsi@{{ vm.org }}-{{ vm.host }}.service
     state: stopped
-  when: vm.storage_type|default(xen_vman_storage_type) == "iscsi" and vm.boot_after_creation|default(xen_vman_boot_after_creation) != True
+  when: vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" and vm.boot_after_creation|default(xen_vman_default_boot_after_creation) != True
 
 - name: Boot new VM
   systemd:
     name: vm@{{ vm.org }}-{{ vm.host }}.service
     state: started
-  when: vm.boot_after_creation|default(xen_vman_boot_after_creation) == True
+  when: vm.boot_after_creation|default(xen_vman_default_boot_after_creation) == True

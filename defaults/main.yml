@@ -4,8 +4,6 @@ xen_vman_vcpus:                 2
 xen_vman_auto_boot:             1
 xen_vman_storage_type:          nfs
 xen_vman_cpu_str:               all,^1
-xen_vman_initrd:                /etc/xen/initrd.img
-xen_vman_kernel:                /etc/xen/kernel
 xen_vman_cmd:                   "root=/dev/xvda rootfstype=ext4 rw"
 xen_vman_spice:                 0
 xen_vman_spicehost:             0.0.0.0

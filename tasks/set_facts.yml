@@ -19,3 +19,18 @@
     xen_vman_iscsiadm_path: "{{ xen_vman_iscsiadm_path.stdout }}"
   when: xen_vman_iscsiadm_path.stdout is defined
   changed_when: False
+
+- name: Get current running kernel
+  shell: uname -v
+  register: xen_vman_host_kernel
+  changed_when: False
+
+- name: Set vm kernel to current running kernel if not specifed
+  set_fact:
+    xen_vman_kernel: /boot/vmlinuz-{{ xen_vman_host_kernel.stdout }}
+  when: xen_vman_kernel is not defined
+
+- name: Set vm initrd to current used initrd if not specifed
+  set_fact:
+    xen_vman_initrd: /boot/initrd.img-{{ xen_vman_host_kernel.stdout }}
+  when: xen_vman_initrd is not defined

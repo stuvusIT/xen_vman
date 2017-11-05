@@ -3,7 +3,6 @@
     name: "{{ item }}"
   with_items:
     - open-iscsi
-    - systemd-container
     - sed
-    - openvswitch-common
-    - openvswitch-switch
+    - debianutils
+    - nfs-common

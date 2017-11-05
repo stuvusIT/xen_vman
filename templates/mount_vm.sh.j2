@@ -50,18 +50,23 @@ function detect_storage_type() {
 while [[ $# -gt 0 ]]; do
 	case $1 in
 		"-m" | "--mount")
+			[ -n "$action" ] && { echo "ERROR:   Only one of -m and -u can be specified"; exit 1; }
 			action="mount"
 			;;
 		"-u" | "--umount")
+			[ -n "$action" ] && { echo "ERROR:   Only one of -m and -u can be specified"; exit 1; }
 			action="umount"
 			;;
 		"-s" | "--systemd")
+			[ -n "$org" -o -n "$host" ] && { echo "ERROR:   -s can't be used together with -o and -h"; exit 1; }
 			shift; vm="$1"
 			;;
 		"-o" | "--org")
+			[ -n "$vm" ] && { echo "ERROR:   -s can't be used together with -o and -h"; exit 1; }
 			shift; org="$1"
 			;;
 		"-h" | "--host")
+			[ -n "$vm" ] && { echo "ERROR:   -s can't be used together with -o and -h"; exit 1; }
 			shift; host="$1"
 			;;
 		"-p" | "--mount_path")
@@ -78,10 +83,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 
-config_path="{{ xen_vman_vm_config_path }}/$vm.cfg"
-
 # Check for all arguments and exit if something is missing
 [ -n "$org" -a -n "$host" ]        && vm="$org-$host"  # vm is specified by org and host
+config_path="{{ xen_vman_vm_config_path }}/$vm.cfg"
 [ -z "$vm" ]                       && { echo "ERROR:   No vm specified"; exit 1; }  # Exit if no vm is specified
 [ -f "$config_path" ]              || { echo "ERROR:   Invalid vm specified ($vm)"; exit 1; }  # Exit if vm is not found
 [ -z "$action" ]                   && { echo "ERROR:   Exactly one of \"-m\" or \"-u\" must be specified"; exit 1; }

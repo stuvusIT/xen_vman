@@ -6,3 +6,4 @@
     - sed
     - debianutils
     - nfs-common
+    - debootstrap

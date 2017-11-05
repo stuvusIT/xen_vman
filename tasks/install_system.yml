@@ -1,0 +1,29 @@
+- name: Make sure iscsi device is logged in
+  systemd:
+    name: vm_iscsi@{{ vm.org }}/{{ vm.host }}.service
+    state: started
+  when: vm.storage_type|default(xen_vman_storage_type) == "iscsi"
+
+- name: Format root storage if needed
+  shell: mkfs.{{ vm.filesystem|default(xen_vman_default_filesystem) }} "/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:{{ vm.org }}-{{ vm.host }}-lun-0"
+  when: vm.storage_type|default(xen_vman_storage_type) == "iscsi"
+
+- name: Make sure vm root is mounted
+  systemd:
+    name: vm_mount@{{ vm.org }}/{{ vm.host }}.service
+    state: started
+
+# TODO: make system installation async
+- name: Install {{ vm.os.type }} {{ vm.os.version }} on new server
+  shell: debootstrap --include openssh-server,python {{ vm.os.version }} /mnt/vms/{{ vm.org }}-{{ vm.host }}
+  when: vm.os.type == "ubuntu"
+
+- name: Deploy current public key at new vm
+  debug:
+    msg: "{{ ansible_ssh_host_key_ed25519_public }}"
+
+- name: Logout from iscsi device if needed
+  systemd:
+    name: vm_iscsi@{{ vm.org }}-{{ vm.host }}.service
+    state: stopped
+  when: vm.storage_type|default(xen_vman_storage_type) == "iscsi"

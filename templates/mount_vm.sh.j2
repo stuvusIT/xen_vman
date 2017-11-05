@@ -9,7 +9,7 @@ function mount_iscsi() {
 		systemctl start vm_iscsi@$vm.service
   	}
 	timeout=$(({{ xen_vman_iscsi_login_timeout }}*2))
-	while [ ! -b "$blk_dev" ]; do
+	while [ ! -b "$blk_dev" ]; do  # wait for block device
 	  sleep 0.5
 	  timeout=$((timeout-1))
 	done

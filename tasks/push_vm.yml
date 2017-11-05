@@ -26,7 +26,7 @@
     dest: "{{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.host }}.cfg"
     group: root
     owner: root
-    mode: 'u=rw,g=r,o-rwx'
+    mode: 'u=rw,g=r,o=r'
     src: vm.conf.j2
 
 - name: "Tag vm storage type as iscsi"

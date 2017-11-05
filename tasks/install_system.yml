@@ -1,10 +1,10 @@
-- name: Make sure iscsi device is logged in
+- name: Make sure iscsi device for {{ vm.host }} @{{ vm.org }} is logged in
   systemd:
     name: vm_iscsi@{{ vm.org }}/{{ vm.host }}.service
     state: started
   when: vm.storage_type|default(xen_vman_storage_type) == "iscsi"
 
-- name: Format root storage if needed
+- name: Format root storage for {{ vm.host }} @{{ vm.org }}
   shell: mkfs.{{ vm.filesystem|default(xen_vman_default_filesystem) }} "/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:{{ vm.org }}-{{ vm.host }}-lun-0"
   when: vm.storage_type|default(xen_vman_storage_type) == "iscsi"
 
@@ -14,13 +14,46 @@
     state: started
 
 # TODO: make system installation async
-- name: Install {{ vm.os.type }} {{ vm.os.version }} on new server
+- name: Install {{ vm.os.type }} {{ vm.os.version }} at {{ vm.host }} @{{ vm.org }}
   shell: debootstrap --include openssh-server,python {{ vm.os.version }} /mnt/vms/{{ vm.org }}-{{ vm.host }}
   when: vm.os.type == "ubuntu"
 
-- name: Deploy current public key at new vm
-  debug:
-    msg: "{{ ansible_ssh_host_key_ed25519_public }}"
+- name: Create current ansible user at {{ vm.host }} @{{ vm.org }}
+  shell: chroot /mnt/vms/{{ vm.org }}-{{ vm.host }} /usr/sbin/useradd -c "Create for inital use by xen_vman" -G "users,sudo" -m "{{ ansible_user }}"
+  when: vm.os.type == "ubuntu"  # This check is needed since different distributions use different default groups for sudo
+
+- name: Create .ssh directory for {{ ansible_user }} at {{ vm.host }} @{{ vm.org }}
+  file:
+    path: "/mnt/vms/{{ vm.org }}-{{ vm.host }}/home/{{ ansible_user }}/.ssh"
+    mode: "u=rwX,g-rwx,o-rwx"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    state: directory
+
+- name: Deploy current public key for {{ ansible_user }} at new vm {{ vm.host }} @{{ vm.org }}
+  copy:
+    src: "{{ ansible_ssh_private_key_file }}.pub"
+    dest: "/mnt/vms/{{ vm.org }}-{{ vm.host }}/home/{{ ansible_user }}/.ssh/authorized_keys"
+    mode: "u=rw,g-rwx,o-rwx"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Allow {{ ansible_user }} at {{ vm.host}} @{{ vm.org }} to escalate to root without password
+  lineinfile:
+    insertafter: "^# Allow members of group sudo"
+    line: "%sudo   ALL=(ALL) NOPASSWD: ALL"
+    regexp: "^%sudo "
+    path: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/sudoers
+    state: present
+  when: vm.os.type == "ubuntu"
+
+- name: Create a proper fstab for new system ({{ vm.host}} @{{ vm.org }})
+  template:
+    dest: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/fstab
+    group: root
+    owner: root
+    mode: 'u=rw,g=r,o=r'
+    src: fstab.j2
 
 - name: Logout from iscsi device if needed
   systemd:

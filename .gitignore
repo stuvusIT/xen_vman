@@ -61,5 +61,3 @@ Session.vim
 .netrwhist
 # auto-generated tag files
 tags
-
-# End of https://www.gitignore.io/api/ansible,linux,vim,git,osx

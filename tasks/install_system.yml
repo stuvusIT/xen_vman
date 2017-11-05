@@ -59,7 +59,7 @@
   systemd:
     name: vm_iscsi@{{ vm.org }}-{{ vm.host }}.service
     state: stopped
-  when: vm.storage_type|default(xen_vman_storage_type) == "iscsi"
+  when: vm.storage_type|default(xen_vman_storage_type) == "iscsi" and vm.boot_after_creation|default(xen_vman_boot_after_creation) != True
 
 - name: Boot new vm
   systemd:

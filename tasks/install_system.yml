@@ -35,7 +35,7 @@
 
 # Set the correct owner in chroot, since ansible is not able to specify the uid and guid numberic
 - name: Set correct owner for authorized_keys at {{ vm.host }} @{{ vm.org }}
-  shell: chroot /mnt/vms/{{ vm.org }}-{{ vm.host }} /bin/chown -Rc {{ ansible_user }}:{{ ansible_user }} /mnt/vms/{{ vm.org }}-{{ vm.host }}/home/{{ ansible_user }}/.ssh/
+  shell: chroot /mnt/vms/{{ vm.org }}-{{ vm.host }} /bin/chown -Rc {{ ansible_user }}:{{ ansible_user }} /home/{{ ansible_user }}/.ssh/
 
 - name: Allow {{ ansible_user }} at {{ vm.host}} @{{ vm.org }} to escalate to root without password
   lineinfile:

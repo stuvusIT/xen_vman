@@ -38,8 +38,8 @@ function mount_iscsi() {
 }
 
 function mount_nfs() {
-	org="$(sed -n 's/^# [-_a-zA-z0-9]\+ @//p' "$config_path")"
-	host="$(sed -n 's/^# \([-_a-zA-z0-9]\+\) @.*/\1/p' "$config_path")"
+	org="$(sed -n 's/^# [-_a-zA-Z0-9]\+ @//p' "$config_path")"
+	host="$(sed -n 's/^# \([-_a-zA-Z0-9]\+\) @.*/\1/p' "$config_path")"
 	mount -v "{{ xen_vman_nfsroot_base }}$org/$host-root" "$mount_path"
 }
 

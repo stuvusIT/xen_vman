@@ -40,8 +40,8 @@
 - name: Allow {{ ansible_user }} at {{ vm.host}} @{{ vm.org }} to escalate to root without password
   lineinfile:
     insertafter: "^# Allow members of group sudo"
-    line: "%sudo   ALL=(ALL) NOPASSWD: ALL"
-    regexp: "^%sudo .*"
+    line: '%sudo   ALL=(ALL) NOPASSWD: ALL'
+    regexp: '^%sudo .*'
     path: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/sudoers
     state: present
   when: vm.os.type == "ubuntu"
@@ -53,6 +53,14 @@
     owner: root
     mode: 'u=rw,g=r,o=r'
     src: fstab.j2
+
+- name: Generate a proper simplified debian network configuration
+  template:
+    dest: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/network/interfaces
+    group: root
+    owner: root
+    mode: 'u=rw,g=r,o=r'
+    src: interfaces.j2
 
 - name: Logout from iscsi device if needed
   systemd:

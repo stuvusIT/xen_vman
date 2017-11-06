@@ -41,7 +41,7 @@
   lineinfile:
     insertafter: "^# Allow members of group sudo"
     line: "%sudo   ALL=(ALL) NOPASSWD: ALL"
-    regexp: "^%sudo "
+    regexp: "^%sudo .*"
     path: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/sudoers
     state: present
   when: vm.os.type == "ubuntu"

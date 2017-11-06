@@ -40,8 +40,8 @@
 - name: Allow {{ ansible_user }} at {{ vm.host}} @{{ vm.org }} to escalate to root without password
   lineinfile:
     insertafter: "^# Allow members of group sudo"
+    regexp: '^%sudo\s'
     line: '%sudo   ALL=(ALL) NOPASSWD: ALL'
-    regexp: '^%sudo .*'
     path: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/sudoers
     state: present
   when: vm.os.type == "ubuntu"

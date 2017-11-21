@@ -1,30 +1,35 @@
 ---
-- name: Test if VM {{ vm.host }} @{{ vm.org }} exists
+- name: Set default organization for {{ vm.name }}
+  set_fact:
+    vm.org: "{{ xen_vman_default_org }}"
+  when: vm.org is undefined
+
+- name: Test if VM {{ vm.name }} @{{ vm.org }} exists
   stat:
-    path: "{{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.host }}.cfg"
+    path: "{{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.name }}.cfg"
   register: vm_config_file
   changed_when: False
 
-- name: Get old creation date from {{ vm.host }} @{{ vm.org }} (1/2)
-  shell: "sed -n 's/^# created at:    //p' {{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.host }}.cfg"
+- name: Get old creation date from {{ vm.name }} @{{ vm.org }} (1/2)
+  shell: "sed -n 's/^# created at:    //p' {{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.name }}.cfg"
   register: creation_date
   when: vm_config_file.stat.exists
   changed_when: False
 
-- name: Get old creation date from {{ vm.host }} @{{ vm.org }} (2/2)
+- name: Get old creation date from {{ vm.name }} @{{ vm.org }} (2/2)
   set_fact:
     creation_date: "{{ creation_date.stdout }}"
   when: vm_config_file.stat.exists
   changed_when: False
 
-- name: Set creation date for {{ vm.host }} @{{ vm.org }}
+- name: Set creation date for {{ vm.name }} @{{ vm.org }}
   set_fact:
     creation_date: "{{ ansible_date_time.iso8601 }}"
   when: not vm_config_file.stat.exists
 
-- name: Install xen config for {{ vm.host }} @{{ vm.org }}
+- name: Install Xen configuration for {{ vm.name }} @{{ vm.org }}
   template:
-    dest: "{{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.host }}.cfg"
+    dest: "{{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.name }}.cfg"
     group: root
     owner: root
     mode: 0644
@@ -32,7 +37,7 @@
 
 - name: Tag VM storage type as iSCSI
   template:
-    dest: "{{ xen_vman_vm_config_path }}/.iscsi/{{ vm.org }}-{{ vm.host }}"
+    dest: "{{ xen_vman_vm_config_path }}/.iscsi/{{ vm.org }}-{{ vm.name }}"
     group: root
     owner: root
     mode: 0644
@@ -41,7 +46,7 @@
 
 - name: Untag VM storage type as iSCSI
   file:
-    path: "{{ xen_vman_vm_config_path }}/.iscsi/{{ vm.org }}-{{ vm.host }}"
+    path: "{{ xen_vman_vm_config_path }}/.iscsi/{{ vm.org }}-{{ vm.name }}"
     state: absent
   when: vm.storage_type|default(xen_vman_default_storage_type) != "iscsi"
 

@@ -1,70 +1,139 @@
-# Xen vm management (xen_vman)
+# Xen VM management (xen_vman)
 
-This role managed xen vms with systemd services.
+This role manages Xen VMs with systemd services.
 
-For each configured vm a xen vm configuration will be auto generated. You can start and stop the vms with systemd.
-Currently iscsi and nfs are completely supported as filesystem backend. For all other backends you need to install the system afterwards manually.
+For each configured VM a Xen VM configuration is generated. You can start and stop the VMs with systemd.
+Currently, iSCSI and NFS are completely supported as filesystem backends.
+For all other backends you manually need to install the system afterwards.
 
 ## systemd services
 
 ### vm@&lt;organisation&gt;-&lt;host&gt;.service
-Start and stop the given VM. For ex. `systemd start vm@stuvus-web01` will start the _web01_ server from the organisation _stuvus_.
+
+Start and stop the given VM. For example `systemd start vm@stuvus-web01` will start the _web01_ server from the organisation _stuvus_.
 
 ### vm_iscsi@&lt;organisation&gt;-&lt;host&gt;.service
-Does a login or a logout for the iSCSI root disk for the given VM, this is only done, when as backend iSCSI is selected, otherwise systemd will ignore any request silently.
+
+Does a login or a logout for the iSCSI root disk for the given VM, this is only done when iSCSI is selected as root backend, otherwise systemd will ignore any request silently.
 
 ### vm_mount@&lt;organisation&gt;-&lt;host&gt;.service
-Mount or umount the root filesystem from the given VM. For ex. `systemd start vm_mount@stuvus-web02` mounts the root fs from _web01 @stuvus_ into `/mnt/vms/stuvus-web01`. The mount point is automated created and removed.
+
+Mount or umount the root filesystem from the given VM. For example `systemd start vm_mount@stuvus-web02` mounts the root filesystem of _web01 @stuvus_ into `/mnt/vms/stuvus-web01`. The mount point is automated created and removed.
 
 ## Requirements
 
-A xen host machine running a debian host system. And filesystem utils for all used filesystems installed.
+A Xen host machine running a Debian host system.
+Also, filesystem utilities for filesystems used by the guests are required.
 
 ## Role Variables
 
-### Primary
-| Option                                 | Type                    | Default           | Description                                                                                                                           | Required |
-|----------------------------------------|-------------------------|-------------------|---------------------------------------------------------------------------------------------------------------------------------------|:--------:|
-| xen_vman_xl_path                       | string                  | _auto determined_ | Fully qualified path for the xl command                                                                                               |     N    |
-| xen_vman_iscsiadm_path                 | string                  | _auto determined_ | Fully qualified path for the iscsiadm                                                                                                 |     N    |
-| xen_vman_vms                           | list of dicts           | `[]`              | A list of all vm specification see [xen_vman_vms](#xen_vman_vms)                                                                      |     N    |
-| xen_vman_vm_config_path                | string                  | `/etc/xen/vms`    | Path to store the generate xen vm configuration                                                                                       |     N    |
-| xen_vman_start_timeout                 | integer                 | `15`              | Systemd timeout in seconds to start a VM                                                                                              |     N    |
-| xen_vman_stop_timeout                  | integer                 | `300`             | Systemd timeout in seconds to shutdown a VM, after timeout is reached, systemd kills the VM                                           |     N    |
-| xen_vman_iscsi_login_timeout           | integer                 | `40`              | Maximum time in seconds to wait for an iSCSI login request to complete                                                                |     N    |
-| xen_vman_iscsi_logout_timeout          | integer                 | `40`              | Maximum time in seconds to wait for an iSCSI logout request to complete                                                               |     N    |
-| xen_vman_mount_timeout                 | integer                 | `20`              | Maximum time in seconds to wait for mount before systemd unit enters failed state                                                     |     N    |
-| xen_vman_umount_timeout                | integer                 | `20`              | Maximum time in seconds to wait for umount before systemd unit enters failed state                                                    |     N    |
-| xen_vman_default_memory                | integer                 | `1024`            | Memory to assign to a xen domU in MiB [¹](#xen_doc)                                                                                   |     N    |
-| xen_vman_default_vcpus                 | integer                 | `2`               | Number of virtual CPU cores to assign to a VM [¹](#xen_doc)                                                                           |     N    |
-| xen_vman_default_storage_type          | string                  | `nfs`             | Default filesystem backend to use                                                                                                     |     N    |
-| xen_vman_default_cpu_str               | string                  | `all,^1`          | List of which cpus the guest is allowed to use [¹](#xen_doc)                                                                          |     N    |
-| xen_vman_default_spice                 | `0` or `1`              | `0`               | Allow access to the display via the SPICE protocol [¹](#xen_doc)                                                                      |     N    |
-| xen_vman_default_spicehost             | string(IP-Address)      | `0.0.0.0`         | Specify the interface address to listen on if given, otherwise any interface [¹](#xen_doc)                                            |     N    |
-| xen_vman_default_spiceport             | integer(Port number)    | `3100`            | Specify the port to listen on by the SPICE server if the SPICE is enabled [¹](#xen_doc)                                               |     N    |
-| xen_vman_default_mouse                 | `0` or `1`              | `1`               | Whether SPICE agent is used for client mouse mode [¹](#xen_doc)                                                                       |     N    |
-| xen_vman_default_spicevdagent          | `0` or `1`              | `1`               | Enables spice vdagent, is automatically enabled when clipboard sharing is enabled [¹](#xen_doc)                                       |     N    |
-| xen_vman_default_share_clipboard       | `0` or `1`              | `1`               | Enables Spice clipboard sharing                                                                                                       |     N    |
-| xen_vman_default_max_usb_redirections  | integer(0-4)            | `4`               | Enables spice usbredirection                                                                                                          |     N    |
-| xen_vman_default_disks                 | list of strings         | `[]`              | Xen disc specification (see also [xl-disk-configuration.txt](http://xenbits.xen.org/docs/4.8-testing/misc/xl-disk-configuration.txt)) |     N    |
-| xen_vman_default_builder               | string                  | `generic`         | Select the domU guest type, valid values are `generic`(para virtualisation) and `hvm`(all hardware is emulated)                       |     N    |
-| xen_vman_default_additonal_xen_options | list of key value dicts | `[]`              | Add additional xen options                                                                                                            |     N    |
-| xen_vman_default_filesystem            | string                  | `ext4`            | Filesystem to use for VMs with iSCSI root disk                                                                                        |     N    |
-| xen_vman_default_auto_boot             | boolean                 | `True`            | Start VM when system boots                                                                                                            |     N    |
-| xen_vman_default_boot_after_creation   | boolean                 | `True`            | Starts the vm after installation                                                                                                      |     N    |
+| Name                                     | Type                    | Default              | Description                                                                                                                           |
+|------------------------------------------|-------------------------|----------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `xen_vman_xl_path`                       | string                  | _auto determined_    | Fully qualified path of the xl command                                                                                                |
+| `xen_vman_iscsiadm_path`                 | string                  | _auto determined_    | Fully qualified path of the iscsiadm command                                                                                          |
+| `xen_vman_vms`                           | list of dicts           | `[]`                 | A list of all VM specifications, see [below](#vm-variables)                                                                           |
+| `xen_vman_vm_config_path`                | string                  | `/etc/xen/vms`       | Path to store the generated Xen VM configurations                                                                                     |
+| `xen_vman_start_timeout`                 | integer                 | `15`                 | systemd timeout in seconds to start a VM                                                                                              |
+| `xen_vman_stop_timeout`                  | integer                 | `300`                | systemd timeout in seconds to stop a VM, after timeout is reached, systemd kills the VM                                               |
+| `xen_vman_iscsi_login_timeout`           | integer                 | `40`                 | Maximum time in seconds to wait for an iSCSI login request to complete                                                                |
+| `xen_vman_iscsi_logout_timeout`          | integer                 | `40`                 | Maximum time in seconds to wait for an iSCSI logout request to complete                                                               |
+| `xen_vman_mount_timeout`                 | integer                 | `20`                 | Maximum time in seconds to wait for mount before systemd unit enters failed state                                                     |
+| `xen_vman_umount_timeout`                | integer                 | `20`                 | Maximum time in seconds to wait for umount before systemd unit enters failed state                                                    |
+| `xen_vman_iscsi_server`                  | string                  | _required for iSCSI_ | iSCSI server to connect to                                                                                                            |
+| `xen_vman_iscsi_base_wwn`                | string                  | _required for iSCSI_ | Base of the WWN name                                                                                                                  |
+| `xen_vman_nameservers`                   | list of strings         | `[]`                 | Nameservers to initially set for the new VMs                                                                                          |
+| `xen_vman_default_org`                   | string                  | `default`            | Name of the organization when none is selected in the VM                                                                              |
+| `xen_vman_default_memory`                | integer                 | `1024`               | Memory to assign to a Xen domU in MiB [¹](#xen_doc)                                                                                   |
+| `xen_vman_default_vcpus`                 | integer                 | `2`                  | Number of virtual CPU cores to assign to a VM [¹](#xen_doc)                                                                           |
+| `xen_vman_default_cpu_str`               | string                  | `all,^1`             | List of which CPUs the guest is allowed to use [¹](#xen_doc)                                                                          |
+| `xen_vman_default_storage_type`          | string                  | `nfs`                | Default filesystem backend to use. Valid choices are `nfs` and `iscsi`                                                                |
+| `xen_vman_default_disks`                 | list of strings         | `[]`                 | Xen disk specification (see also [xl-disk-configuration.txt](http://xenbits.xen.org/docs/4.8-testing/misc/xl-disk-configuration.txt)) |
+| `xen_vman_default_filesystem`            | string                  | `ext4`               | Filesystem to use for VMs with iSCSI root disk                                                                                        |
+| `xen_vman_default_os_type`               | string                  | `ubuntu`             | Select the default operating system type when none is specified in the VM                                                             |
+| `xen_vman_default_os_version`            | string                  | `xenial`             | Select the default operation system version when none is specified in the VM                                                          |
+| `xen_vman_default_boot_after_creation`   | boolean                 | `True`               | Start the VM after installation                                                                                                       |
+| `xen_vman_default_auto_boot`             | boolean                 | `True`               | Start VM when hypervisor boots                                                                                                        |
+| `xen_vman_default_builder`               | string                  | `generic`            | Select the domU guest type, valid values are `generic` (para virtualization) and `hvm` (all hardware is emulated)                     |
+| `xen_vman_default_kernel`                | string                  | _auto determined_    | Path to the kernel to use for generic VMs                                                                                             |
+| `xen_vman_default_initrd`                | string                  | _auto determined_    | Path to the initrd to use for generic VMs                                                                                             |
+| `xen_vman_default_cmdline`               | string                  | ` `                  | Command line to pass to the kernel for generic VMs                                                                                    |
+| `xen_vman_default_spice`                 | boolean                 | False                | Allow access to the display via the SPICE protocol [¹](#xen_doc)                                                                      |
+| `xen_vman_default_spicehost`             | string (IP-Address)     | `0.0.0.0`            | Specify the interface address to listen on if given, defaults to any interface [¹](#xen_doc)                                          |
+| `xen_vman_default_spiceport`             | integer                 | `3100`               | Specify the port to listen on by the SPICE server if SPICE is enabled [¹](#xen_doc)                                                   |
+| `xen_vman_default_mouse`                 | boolean                 | True                 | Whether SPICE agent is used for client mouse mode [¹](#xen_doc)                                                                       |
+| `xen_vman_default_share_clipboard`       | boolean                 | True                 | Enables SPICE clipboard sharing                                                                                                       |
+| `xen_vman_default_spicevdagent`          | boolean                 | True                 | Enables SPICE vdagent, this is automatically enabled when clipboard sharing is enabled [¹](#xen_doc)                                  |
+| `xen_vman_default_max_usb_redirections`  | integer (0-4)           | `4`                  | Enable SPICE USB redirections                                                                                                         |
+| `xen_vman_default_additonal_xen_options` | list of key value dicts | `[]`                 | Add additional Xen options                                                                                                            |
 
-<a id="xen_doc">¹</a> For future reference see [man xl.cfg](http://xenbits.xen.org/docs/4.8-testing/man/xl.cfg.5.html)
 
+<a id="xen_doc">¹</a> For further reference see [man xl.cfg](http://xenbits.xen.org/docs/4.8-testing/man/xl.cfg.5.html)
+
+### VM variables
+
+These variables can be specified for each VM.
+
+| Name                     | Type                    | Required | Description                                                                             |
+|--------------------------|-------------------------|:--------:|-----------------------------------------------------------------------------------------|
+| `org`                    | string                  | Y        | Organization which owns this VM                                                         |
+| `name`                   | string                  | Y        | Name of this VM                                                                         |
+| `memory`                 | integer                 | N        | Memory to assign to this VM                                                             |
+| `vcpus`                  | integer                 | N        | Amount of virtual CPU cores                                                             |
+| `cpu_str`                | string                  | N        | List of which CPU cores the VM is allowed to use. See above for more information        |
+| `interfaces`             | list of dicts           | Y        | Virtual network interfaces. See [below](#vm-interfaces)                                 |
+| `connection_ip`          | string                  | N        | IP of this VM. Will be configured as static IP. First interface IP is used when omitted |
+| `storage_type`           | string                  | N        | Storage backend of the root filesystem. See above for valid options                     |
+| `disks`                  | list of strings         | N        | Additional Xen disk specifications. See above for information                           |
+| `filesystem`             | string                  | N        | When using iSCSI, this filesystem is used for the root                                  |
+| `os.type`                | string                  | N        | Type of the operating system                                                            |
+| `os.version`             | string                  | N        | Version of the chosen operating system                                                  |
+| `boot_after_creation`    | boolean                 | N        | Whether to boot the VM after creation                                                   |
+| `auto_boot`              | boolean                 | N        | Whether to boot the VM on hypervisor boot                                               |
+| `builder`                | string                  | N        | Select the builder for this VM (`generic` or `hvm`)                                     |
+| `kernel`                 | string                  | N        | (For generic VMs only) Path to the kernel to boot                                       |
+| `initrd`                 | string                  | N        | (For generic VMs only) Path to the initrd to pass to the kernel                         |
+| `cmdline`                | string                  | N        | (For generic VMs only) Command line to pass to the kernel                               |
+| `spice`                  | boolean                 | N        | (For generic VMs only) Enable SPICE                                                     |
+| `spicehost`              | string                  | N        | (For HVM VMs only) Address for the SPICE server to listen on                            |
+| `spiceport`              | integer                 | N        | (For HVM VMs only) Port for the SPICE server to listen on                               |
+| `spicepasswd`            | string                  | N        | (For HVM VMs only) Password required when connecting to the SPICE server                |
+| `share_clipboard`        | boolean                 | N        | (For HVM VMs only) Share clipboard via SPICE                                            |
+| `spicevdagent`           | boolean                 | N        | (For HVM VMs only) Enable the SPICE vdagent                                             |
+| `max_usb_redirections`   | integer                 | N        | (For HVM VMs only) Maximum amount of USB redirections                                   |
+| `additional_xen_options` | list of key value dicts | N        | Add additional Xen options                                                              |
+
+# VM interfaces
+
+Each network interface may have the following options.
+All of them are optional.
+
+| Name      | Type     | Description                                  |
+|-----------|----------|----------------------------------------------|
+| `ip`      | `string` | IP address of this interface                 |
+| `map`     | `string` | MAC address of this interface                |
+| `bridge`  | `string` | Bridge to attach the interface to            |
+| `xen_str` | `string` | Additional Xen parameters for this interface |
 
 ## Example Playbook
-### Vars:
+
 ```yml
+- hosts: hypervisor
+  roles:
+    xen_vman
+    xen_vman_vms:
+      - name: testvm
+        interfaces:
+        - ip: 10.0.0.15
+          mac: 00:14:22:01:23:45
+          bridge: mybridge
+          os.version: 18.04
 ```
-### Result:
 
 ## License
 
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/).
 
 ## Author Information
+
 - [Markus Mroch (Mr. Pi)](https://github.com/Mr-Pi) _markus.mroch@stuvus.uni-stuttgart.de_
+- [Janne Heß](https://github.com/dasJ)

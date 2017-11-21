@@ -38,7 +38,7 @@
 - name: Set correct owner for authorized_keys at {{ vm.host }} @{{ vm.org }}
   shell: chroot /mnt/vms/{{ vm.org }}-{{ vm.host }} /bin/chown -Rc {{ ansible_user }}:{{ ansible_user }} /home/{{ ansible_user }}/.ssh/
 
-- name: Allow {{ ansible_user }} at {{ vm.host}} @{{ vm.org }} to escalate to root without password
+- name: Allow {{ ansible_user }} at {{ vm.host }} @{{ vm.org }} to escalate to root without password
   lineinfile:
     insertafter: "^# Allow members of group sudo"
     regexp: '^%sudo\s'
@@ -46,7 +46,7 @@
     path: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/sudoers
   when: vm.os.type == "ubuntu"
 
-- name: Create a proper fstab for new system ({{ vm.host}} @{{ vm.org }})
+- name: Create a proper fstab for new system ({{ vm.host }} @{{ vm.org }})
   template:
     dest: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/fstab
     group: root

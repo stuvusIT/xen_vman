@@ -1,60 +1,19 @@
-### Ansible ###
-*.retry
-
-### Git ###
+# git
 *.orig
-
-### Linux ###
-*~
-
-# temporary files which can be created if a process still has a handle open of a deleted file
+# filesystem stuff
 .fuse_hidden*
-
-# KDE directory preferences
-.directory
-
-# Linux trash folder which might appear on any partition or disk
-.Trash-*
-
-# .nfs files are created when an open file is removed but is still being accessed
 .nfs*
-
-### OSX ###
-*.DS_Store
-.AppleDouble
-.LSOverride
-
-# Icon must end with two \r
-Icon
-
-# Thumbnails
+# backups and swaps
 ._*
-
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
-### Vim ###
-# swap
+*~
+# vim swap
 [._]*.s[a-v][a-z]
 [._]*.sw[a-p]
 [._]s[a-v][a-z]
 [._]sw[a-p]
-# session
+# vim session
 Session.vim
-# temporary
+# vim netrw history
 .netrwhist
-# auto-generated tag files
+# vim auto-generated tag files
 tags

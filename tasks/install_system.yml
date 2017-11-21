@@ -44,7 +44,6 @@
     regexp: '^%sudo\s'
     line: '%sudo   ALL=(ALL) NOPASSWD: ALL'
     path: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/sudoers
-    state: present
   when: vm.os.type == "ubuntu"
 
 - name: Create a proper fstab for new system ({{ vm.host}} @{{ vm.org }})

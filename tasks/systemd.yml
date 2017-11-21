@@ -4,7 +4,7 @@
     dest: /etc/systemd/system/vm@.service
     group: root
     owner: root
-    mode: 'u=rw,g=r,o=r'
+    mode: 0644
     src: vm@.service.j2
 
 - name: Install systemd service file (vm_iscsi@.service)
@@ -12,7 +12,7 @@
     dest: /etc/systemd/system/vm_iscsi@.service
     group: root
     owner: root
-    mode: 'u=rw,g=r,o=r'
+    mode: 0644
     src: vm_iscsi@.service.j2
 
 - name: Create listing folder for all vms requiring iSCSI (needed for selective vm_iscsi@.service starts)
@@ -21,14 +21,14 @@
     state: directory
     group: root
     owner: root
-    mode: 'u=rwX,g=rX,o=rX'
+    mode: 0755
 
 - name: Install mount helper script
   template:
     dest: /etc/xen/scripts/mount_vm.sh
     group: root
     owner: root
-    mode: 'u=rwx,g=rx,o-rwx'
+    mode: 0750
     src: mount_vm.sh.j2
 
 - name: Install systemd service file (vm_mount@.service)
@@ -36,5 +36,5 @@
     dest: /etc/systemd/system/vm_mount@.service
     group: root
     owner: root
-    mode: 'u=rw,g=r,o=r'
+    mode: 0644
     src: vm_mount@.service.j2

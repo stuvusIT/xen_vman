@@ -25,14 +25,14 @@
 - name: Create .ssh directory for {{ ansible_user }} at {{ vm.host }} @{{ vm.org }}
   file:
     path: "/mnt/vms/{{ vm.org }}-{{ vm.host }}/home/{{ ansible_user }}/.ssh"
-    mode: "u=rwX,g-rwx,o-rwx"
+    mode: 0700
     state: directory
 
 - name: Deploy current public key for {{ ansible_user }} at new VM {{ vm.host }} @{{ vm.org }}
   copy:
     src: "{{ ansible_ssh_private_key_file }}.pub"
     dest: "/mnt/vms/{{ vm.org }}-{{ vm.host }}/home/{{ ansible_user }}/.ssh/authorized_keys"
-    mode: "u=rw,g-rwx,o-rwx"
+    mode: 0600
 
 # Set the correct owner in chroot, since ansible is not able to specify the uid and guid numeric
 - name: Set correct owner for authorized_keys at {{ vm.host }} @{{ vm.org }}
@@ -51,7 +51,7 @@
     dest: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/fstab
     group: root
     owner: root
-    mode: 'u=rw,g=r,o=r'
+    mode: 0644
     src: fstab.j2
 
 - name: Generate a proper simplified Debian network configuration
@@ -59,7 +59,7 @@
     dest: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/network/interfaces
     group: root
     owner: root
-    mode: 'u=rw,g=r,o=r'
+    mode: 0644
     src: interfaces.j2
 
 - name: Log out from iSCSI device if needed

@@ -1,3 +1,4 @@
+---
 - name: Make sure iSCSI device for {{ vm.host }} @{{ vm.org }} is logged in
   systemd:
     name: vm_iscsi@{{ vm.org }}/{{ vm.host }}.service
@@ -33,7 +34,7 @@
     dest: "/mnt/vms/{{ vm.org }}-{{ vm.host }}/home/{{ ansible_user }}/.ssh/authorized_keys"
     mode: "u=rw,g-rwx,o-rwx"
 
-# Set the correct owner in chroot, since ansible is not able to specify the uid and guid numberic
+# Set the correct owner in chroot, since ansible is not able to specify the uid and guid numeric
 - name: Set correct owner for authorized_keys at {{ vm.host }} @{{ vm.org }}
   shell: chroot /mnt/vms/{{ vm.org }}-{{ vm.host }} /bin/chown -Rc {{ ansible_user }}:{{ ansible_user }} /home/{{ ansible_user }}/.ssh/
 
@@ -54,7 +55,7 @@
     mode: 'u=rw,g=r,o=r'
     src: fstab.j2
 
-- name: Generate a proper simplified debian network configuration
+- name: Generate a proper simplified Debian network configuration
   template:
     dest: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/network/interfaces
     group: root
@@ -62,7 +63,7 @@
     mode: 'u=rw,g=r,o=r'
     src: interfaces.j2
 
-- name: Logout from iscsi device if needed
+- name: Log out from iSCSI device if needed
   systemd:
     name: vm_iscsi@{{ vm.org }}-{{ vm.host }}.service
     state: stopped

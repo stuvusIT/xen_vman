@@ -1,3 +1,4 @@
+---
 - name: Install systemd service file (vm@.service)
   template:
     dest: /etc/systemd/system/vm@.service

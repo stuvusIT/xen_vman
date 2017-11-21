@@ -1,3 +1,4 @@
+---
 - name: Get correct path for xl if needed
   shell: which xl
   register: xen_vman_xl_path
@@ -22,7 +23,7 @@
   when: xen_vman_iscsiadm_path.stdout is defined
   changed_when: False
 
-- name: Get current running kernel
+- name: Get currently running kernel
   shell: uname -r
   register: xen_vman_host_kernel
   changed_when: False

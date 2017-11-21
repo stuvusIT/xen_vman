@@ -1,3 +1,4 @@
+---
 - name: Push VM configuration for {{ vm.host }} @{{ vm.org }}
   include_tasks: push_vm.yml
 

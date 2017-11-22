@@ -5,7 +5,4 @@ source-directory /etc/network/interfaces.d
 auto eth0
 iface eth0 inet static
 	address {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('address') }}
-	network {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('network') }}
-	netmask {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('netmask') }}
-	broadcast {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('broadcast') }}
 	{% if xen_vman_nameservers is defined %}dns-nameservers {{ xen_vman_nameservers|join(' ') }}{% endif %}

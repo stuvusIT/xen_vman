@@ -63,7 +63,7 @@ spicedisable_ticketing  = 0 {#- login without password should be disabled in any
 spicepasswd             = "{{ vm.spicepasswd }}"
 spiceagent_mouse        = {% if vm.mouse|default(xen_vman_default_mouse) %}1{% else %}0{% endif %}
 {#- spicevdagent is needed for clipboard sharing -#}
-spicevdagent            = {% if vm.share_clipboard|default(xen_vman_default_share_clipboard) -%}1{% else %}{% if vm.spicevdagent|default(xen_vman_default_spicevdagent) %}1{% else %}0{% endif %}{% endif %}
+spicevdagent            = {% if vm.share_clipboard|default(xen_vman_default_share_clipboard) %}1{% else %}{% if vm.spicevdagent|default(xen_vman_default_spicevdagent) %}1{% else %}0{% endif %}{% endif %}
 spice_clipboard_sharing = {% if vm.share_clipboard|default(xen_vman_default_share_clipboard) %}1{% else %}0{% endif %}
 spiceusbredirection     = {{ vm.max_usb_redirections|default(xen_vman_default_max_usb_redirections) }}
 	{%- else -%}

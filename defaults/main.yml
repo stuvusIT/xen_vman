@@ -12,7 +12,7 @@ xen_vman_umount_timeout:                20
 xen_vman_iscsi_server:                  ""
 xen_vman_iscsi_base_wwn:                ""
 xen_vman_nameservers:                   []
-xen_vman_debootstrap_packages:          [ systemd, systemd-sysv, udev, resolvconf, openssh-server, python ]
+xen_vman_debootstrap_packages:          [ systemd, systemd-sysv, udev, resolvconf, openssh-server, sudo, python ]
 
 xen_vman_default_org:                   default
 xen_vman_default_storage_type:          nfs

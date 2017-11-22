@@ -1,8 +1,8 @@
 ################################################################################
 # {{ ansible_managed }}
 ################################################################################
-# {{ vm.host }} @{{ vm.org}}
-# {{ vm.description }}
+# {{ vm.name }} @{{ vm.org}}
+# {{ vm.description | default('') }}
 #-------------------------------------------------------------------------------
 # bootstrapped OS: {{ vm.os.type }} {{ vm.os.version }}
 #
@@ -14,7 +14,7 @@
 # storage type:    {{ vm.storage_type|default(xen_vman_default_storage_type) }}
 ################################################################################
 
-name                    = "{{ vm.org }}-{{ vm.host }}"
+name                    = "{{ vm.org }}-{{ vm.name }}"
 
 memory                  = {{ vm.memory|default(xen_vman_default_memory) }}
 vcpus                   = {{ vm.vcpus|default(xen_vman_default_vcpus) }}
@@ -29,7 +29,7 @@ vif                     = [ {% for interface in vm.interfaces -%}
 {%- endfor %} ]
 
 disk                    = [ {% if vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" -%}
-                              '/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:{{ vm.org }}-{{ vm.host }}-lun-0,raw,xvda,rw'
+                              '/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:{{ vm.org }}-{{ vm.name }}-lun-0,raw,xvda,rw'
                               {%- if vm.disks|default(xen_vman_default_disks)|length > 0 -%}, {% endif -%}
                             {%- endif -%}
                             {%- for disk in vm.disks|default(xen_vman_default_disks) -%}
@@ -42,7 +42,7 @@ ramdisk                 = "{{ vm.initrd|default(xen_vman_default_initrd) }}"
 kernel                  = "{{ vm.kernel|default(xen_vman_default_kernel) }}"
 {% if vm.storage_type|default(xen_vman_default_storage_type) == "nfs" and vm.cmdline is not defined %}
 cmdline                 = "root=/dev/nfs nfsroot=
-                           {{- xen_vman_nfsroot_base }}{{ vm.org }}/{{ vm.host }}-root ip=
+                           {{- xen_vman_nfsroot_base }}{{ vm.org }}/{{ vm.name }}-root ip=
                            {{- vm.connection_ip|default(vm['interfaces'][0]['ip']|ipaddr('address/prefix'))|default('dhcp') }} {{ vm.cmd|default(xen_vman_default_cmdline) }}"
 {% elif vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" and vm.cmdline is not defined %}
 cmdline                 = "root=/dev/xvda rootfstype={{ vm.filesystem|default(xen_vman_default_filesystem) }} rw {{ vm.cmd|default(xen_vman_default_cmdline) }}"
@@ -63,14 +63,14 @@ spicedisable_ticketing  = 0 {#- login without password should be disabled in any
 spicepasswd             = "{{ vm.spicepasswd }}"
 spiceagent_mouse        = {% if vm.mouse|default(xen_vman_default_mouse) %}1{% else %}0{% endif %}
 {#- spicevdagent is needed for clipboard sharing -#}
-spicevdagent            = {% if vm.share_clipboard|default(xen_vman_default_share_clipboard -%}1{% else %}{% if vm.spicevdagent|default(xen_vman_default_spicevdagent) %}1{% else %}0{% endif %}{% endif %}
-spice_clipboard_sharing = {% vm.share_clipboard|default(xen_vman_default_share_clipboard) %}1{% else %}0{% endif %}
+spicevdagent            = {% if vm.share_clipboard|default(xen_vman_default_share_clipboard) -%}1{% else %}{% if vm.spicevdagent|default(xen_vman_default_spicevdagent) %}1{% else %}0{% endif %}{% endif %}
+spice_clipboard_sharing = {% if vm.share_clipboard|default(xen_vman_default_share_clipboard) %}1{% else %}0{% endif %}
 spiceusbredirection     = {{ vm.max_usb_redirections|default(xen_vman_default_max_usb_redirections) }}
 	{%- else -%}
 spice                   = 0
 	{%- endif -%}
 {% endif %}
-{% if additonal_xen_options|default(xen_vman_default_additional_xen_options is defined %}
+{% if additonal_xen_options|default(xen_vman_default_additional_xen_options) is defined %}
 
 
 {% endif %}

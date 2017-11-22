@@ -47,9 +47,9 @@
 
 - name: Set VM auto boot mode
   systemd:
-    name: vm@{{ vm.org }}-{{ vm.host }}.service
+    name: vm@{{ vm.org }}-{{ vm.name }}.service
     enabled: "{{ vm.auto_boot|default(xen_vman_default_auto_boot) }}"
 
-- name: Install VM {{ vm.host }} @{{ vm.org }} if needed
+- name: Install VM {{ vm.name }} @{{ vm.org }} if needed
   include_tasks: install_system.yml
   when: not vm_config_file.stat.exists

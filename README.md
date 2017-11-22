@@ -50,8 +50,6 @@ Also, filesystem utilities for filesystems used by the guests are required.
 | `xen_vman_default_storage_type`          | string                  | `nfs`                                                          | Default filesystem backend to use. Valid choices are `nfs` and `iscsi`                                                                |
 | `xen_vman_default_disks`                 | list of strings         | `[]`                                                           | Xen disk specification (see also [xl-disk-configuration.txt](http://xenbits.xen.org/docs/4.8-testing/misc/xl-disk-configuration.txt)) |
 | `xen_vman_default_filesystem`            | string                  | `ext4`                                                         | Filesystem to use for VMs with iSCSI root disk                                                                                        |
-| `xen_vman_default_os_type`               | string                  | `ubuntu`                                                       | Select the default operating system type when none is specified in the VM                                                             |
-| `xen_vman_default_os_version`            | string                  | `xenial`                                                       | Select the default operation system version when none is specified in the VM                                                          |
 | `xen_vman_default_boot_after_creation`   | boolean                 | `True`                                                         | Start the VM after installation                                                                                                       |
 | `xen_vman_default_auto_boot`             | boolean                 | `True`                                                         | Start VM when hypervisor boots                                                                                                        |
 | `xen_vman_default_builder`               | string                  | `generic`                                                      | Select the domU guest type, valid values are `generic` (para virtualization) and `hvm` (all hardware is emulated)                     |
@@ -86,8 +84,8 @@ These variables can be specified for each VM.
 | `storage_type`           | string                  | N        | Storage backend of the root filesystem. See above for valid options                     |
 | `disks`                  | list of strings         | N        | Additional Xen disk specifications. See above for information                           |
 | `filesystem`             | string                  | N        | When using iSCSI, this filesystem is used for the root                                  |
-| `os.type`                | string                  | N        | Type of the operating system                                                            |
-| `os.version`             | string                  | N        | Version of the chosen operating system                                                  |
+| `os.type`                | string                  | Y        | Type of the operating system                                                            |
+| `os.version`             | string                  | Y        | Version of the chosen operating system                                                  |
 | `boot_after_creation`    | boolean                 | N        | Whether to boot the VM after creation                                                   |
 | `auto_boot`              | boolean                 | N        | Whether to boot the VM on hypervisor boot                                               |
 | `builder`                | string                  | N        | Select the builder for this VM (`generic` or `hvm`)                                     |

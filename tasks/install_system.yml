@@ -15,7 +15,7 @@
     state: started
 
 - name: Install {{ vm.os.type|default(xen_vman_default_os_type) }} {{ vm.os.version|default(xen_vman_default_os_version) }} at {{ vm.name }} @{{ vm.org }}
-  shell: debootstrap --include openssh-server,python {{ vm.os.version|default(xen_vman_default_os_version) }} /mnt/vms/{{ vm.org }}-{{ vm.name }}
+  shell: debootstrap --variant minbase --include {{ xen_vman_debootstrap_packages | join(',') }} {{ vm.os.version|default(xen_vman_default_os_version) }} /mnt/vms/{{ vm.org }}-{{ vm.name }}
   when: vm.os.type|default(xen_vman_default_os_type) == "ubuntu"
 
 - name: Create current Ansible user at {{ vm.name }} @{{ vm.org }}

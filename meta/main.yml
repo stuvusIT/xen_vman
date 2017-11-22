@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Markus Mroch (Mr. Pi)
-  description: Manage Xen VMs with Ansible
+  description: Manage Xen VMs with systemd and Ansible
   company: stuvus (https://stuvus.uni-stuttgart.de)
 
   license: CC-BY-SA
@@ -22,5 +22,8 @@ galaxy_info:
     - virtualization
     - hypervisor
     - manage
+    - iscsi
+    - nfs
+    - systemd
 
 dependencies: []

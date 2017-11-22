@@ -62,6 +62,22 @@
     mode: 0644
     src: interfaces.j2
 
+- name: Create directory for overriding networking.service
+  file:
+    path: /mnt/vms/{{ vm.org }}-{{ vm.name }}/etc/systemd/system/networking.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Prevent systemd from stopping the network in the VM
+  template:
+    dest: /mnt/vms/{{ vm.org }}-{{ vm.name }}/etc/systemd/system/networking.service.d/nostop.conf
+    owner: root
+    group: root
+    mode: 0644
+    src: network-nostop.conf
+
 - name: Log out from iSCSI device if needed
   systemd:
     name: vm_iscsi@{{ vm.org }}-{{ vm.name }}.service

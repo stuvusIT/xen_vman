@@ -7,4 +7,9 @@ iface eth0 inet static
 	network {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('network') }}
 	netmask {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('netmask') }}
 	broadcast {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('broadcast') }}
-	{% if xen_vman_nameserver is defined %}dns-nameservers {{ xen_vman_nameserver|join(' ') }}{% endif %}
+{% if xen_vman_nameserver is defined %}
+	dns-nameservers {{ xen_vman_nameserver|join(' ') }}
+{% endif %}
+{% if xen_vman_gateway is defined %}
+	gateway {{ xen_vman_gateway }}
+{% endif %}

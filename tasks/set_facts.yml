@@ -1,3 +1,4 @@
+---
 - name: Get correct path for xl if needed
   shell: which xl
   register: xen_vman_xl_path
@@ -22,17 +23,17 @@
   when: xen_vman_iscsiadm_path.stdout is defined
   changed_when: False
 
-- name: Get current running kernel
+- name: Get currently running kernel
   shell: uname -r
   register: xen_vman_host_kernel
   changed_when: False
 
-- name: Set VM kernel to current running kernel if not specifed
+- name: Set VM kernel to the currently running kernel if not specifed
   set_fact:
-    xen_vman_kernel: /boot/vmlinuz-{{ xen_vman_host_kernel.stdout }}
-  when: xen_vman_kernel is not defined
+    xen_vman_default_kernel: /boot/vmlinuz-{{ xen_vman_host_kernel.stdout }}
+  when: xen_vman_default_kernel is not defined
 
-- name: Set VM initrd to current used initrd if not specifed
+- name: Set VM initrd to currently used initrd if not specifed
   set_fact:
-    xen_vman_initrd: /boot/initrd.img-{{ xen_vman_host_kernel.stdout }}
-  when: xen_vman_initrd is not defined
+    xen_vman_default_initrd: /boot/initrd.img-{{ xen_vman_host_kernel.stdout }}
+  when: xen_vman_default_initrd is not defined

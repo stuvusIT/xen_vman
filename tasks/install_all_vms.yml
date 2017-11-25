@@ -1,6 +1,55 @@
-- name: Push VM configuration for {{ vm.host }} @{{ vm.org }}
-  include_tasks: push_vm.yml
+---
+- name: Test if VM {{ vm.name }} @{{ vm.org }} exists
+  stat:
+    path: "{{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.name }}.cfg"
+  register: vm_config_file
+  changed_when: False
 
-- name: Install VM {{ vm.host }} @{{ vm.org }} if needed
+- name: Get old creation date from {{ vm.name }} @{{ vm.org }} (1/2)
+  shell: "sed -n 's/^# created at:    //p' {{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.name }}.cfg"
+  register: creation_date
+  when: vm_config_file.stat.exists
+  changed_when: False
+
+- name: Get old creation date from {{ vm.name }} @{{ vm.org }} (2/2)
+  set_fact:
+    creation_date: "{{ creation_date.stdout }}"
+  when: vm_config_file.stat.exists
+  changed_when: False
+
+- name: Set creation date for {{ vm.name }} @{{ vm.org }}
+  set_fact:
+    creation_date: "{{ ansible_date_time.iso8601 }}"
+  when: not vm_config_file.stat.exists
+
+- name: Install Xen configuration for {{ vm.name }} @{{ vm.org }}
+  template:
+    dest: "{{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.name }}.cfg"
+    group: root
+    owner: root
+    mode: 0644
+    src: vm.conf.j2
+
+- name: Tag VM storage type as iSCSI
+  template:
+    dest: "{{ xen_vman_vm_config_path }}/.iscsi/{{ vm.org }}-{{ vm.name }}"
+    group: root
+    owner: root
+    mode: 0644
+    src: iscsi_dev.j2
+  when: vm.storage_type|default(xen_vman_default_storage_type) == "iscsi"
+
+- name: Untag VM storage type as iSCSI
+  file:
+    path: "{{ xen_vman_vm_config_path }}/.iscsi/{{ vm.org }}-{{ vm.name }}"
+    state: absent
+  when: vm.storage_type|default(xen_vman_default_storage_type) != "iscsi"
+
+- name: Set VM auto boot mode
+  systemd:
+    name: vm@{{ vm.org }}-{{ vm.name }}.service
+    enabled: "{{ vm.auto_boot|default(xen_vman_default_auto_boot) }}"
+
+- name: Install VM {{ vm.name }} @{{ vm.org }} if needed
   include_tasks: install_system.yml
   when: not vm_config_file.stat.exists

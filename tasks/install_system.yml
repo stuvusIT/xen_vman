@@ -1,75 +1,91 @@
-- name: Make sure iSCSI device for {{ vm.host }} @{{ vm.org }} is logged in
+---
+- name: Make sure iSCSI device for {{ vm.name }} @{{ vm.org }} is logged in
   systemd:
-    name: vm_iscsi@{{ vm.org }}/{{ vm.host }}.service
+    name: vm_iscsi@{{ vm.org }}/{{ vm.name }}.service
     state: started
   when: vm.storage_type|default(xen_vman_default_storage_type) == "iscsi"
 
-- name: Format root storage for {{ vm.host }} @{{ vm.org }}
-  shell: mkfs.{{ vm.filesystem|default(xen_vman_default_filesystem) }} "/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:{{ vm.org }}-{{ vm.host }}-lun-0"
+- name: Format root storage for {{ vm.name }} @{{ vm.org }}
+  shell: mkfs.{{ vm.filesystem|default(xen_vman_default_filesystem) }} "/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:{{ vm.org }}-{{ vm.name }}-lun-0"
   when: vm.storage_type|default(xen_vman_default_storage_type) == "iscsi"
 
 - name: Make sure VM root is mounted
   systemd:
-    name: vm_mount@{{ vm.org }}/{{ vm.host }}.service
+    name: vm_mount@{{ vm.org }}/{{ vm.name }}.service
     state: started
 
-- name: Install {{ vm.os.type }} {{ vm.os.version }} at {{ vm.host }} @{{ vm.org }}
-  shell: debootstrap --include openssh-server,python {{ vm.os.version }} /mnt/vms/{{ vm.org }}-{{ vm.host }}
+- name: Install {{ vm.os.type }} {{ vm.os.version }} at {{ vm.name }} @{{ vm.org }}
+  shell: debootstrap --variant minbase --include {{ xen_vman_debootstrap_packages | join(',') }} {{ vm.os.version }} /mnt/vms/{{ vm.org }}-{{ vm.name }}
   when: vm.os.type == "ubuntu"
 
-- name: Create current ansible user at {{ vm.host }} @{{ vm.org }}
-  shell: chroot /mnt/vms/{{ vm.org }}-{{ vm.host }} /usr/sbin/useradd -c "Create for inital use by xen_vman" -G "users,sudo" -m "{{ ansible_user }}"
+- name: Create current Ansible user at {{ vm.name }} @{{ vm.org }}
+  shell: chroot /mnt/vms/{{ vm.org }}-{{ vm.name }} /usr/sbin/useradd -g users -G sudo -m "{{ ansible_user }}"
   when: vm.os.type == "ubuntu"  # This check is needed since different distributions use different default groups for sudo
 
-- name: Create .ssh directory for {{ ansible_user }} at {{ vm.host }} @{{ vm.org }}
+- name: Create .ssh directory for {{ ansible_user }} at {{ vm.name }} @{{ vm.org }}
   file:
-    path: "/mnt/vms/{{ vm.org }}-{{ vm.host }}/home/{{ ansible_user }}/.ssh"
-    mode: "u=rwX,g-rwx,o-rwx"
+    path: "/mnt/vms/{{ vm.org }}-{{ vm.name }}/home/{{ ansible_user }}/.ssh"
+    mode: 0700
     state: directory
 
-- name: Deploy current public key for {{ ansible_user }} at new VM {{ vm.host }} @{{ vm.org }}
+- name: Deploy current public key for {{ ansible_user }} at new VM {{ vm.name }} @{{ vm.org }}
   copy:
-    src: "{{ ansible_ssh_private_key_file }}.pub"
-    dest: "/mnt/vms/{{ vm.org }}-{{ vm.host }}/home/{{ ansible_user }}/.ssh/authorized_keys"
-    mode: "u=rw,g-rwx,o-rwx"
+    content: "{{ xen_vman_public_keys | join('\n') }}"
+    dest: "/mnt/vms/{{ vm.org }}-{{ vm.name }}/home/{{ ansible_user }}/.ssh/authorized_keys"
+    mode: 0600
 
-# Set the correct owner in chroot, since ansible is not able to specify the uid and guid numberic
-- name: Set correct owner for authorized_keys at {{ vm.host }} @{{ vm.org }}
-  shell: chroot /mnt/vms/{{ vm.org }}-{{ vm.host }} /bin/chown -Rc {{ ansible_user }}:{{ ansible_user }} /home/{{ ansible_user }}/.ssh/
+# Set the correct owner in chroot, since ansible is not able to specify the uid and guid numeric
+- name: Set correct owner for authorized_keys at {{ vm.name }} @{{ vm.org }}
+  shell: chroot /mnt/vms/{{ vm.org }}-{{ vm.name }} /bin/chown -Rc {{ ansible_user }}:users /home/{{ ansible_user }}/.ssh/
 
-- name: Allow {{ ansible_user }} at {{ vm.host}} @{{ vm.org }} to escalate to root without password
+- name: Allow {{ ansible_user }} at {{ vm.name }} @{{ vm.org }} to escalate to root without password
   lineinfile:
     insertafter: "^# Allow members of group sudo"
     regexp: '^%sudo\s'
     line: '%sudo   ALL=(ALL) NOPASSWD: ALL'
-    path: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/sudoers
-    state: present
+    path: /mnt/vms/{{ vm.org }}-{{ vm.name }}/etc/sudoers
   when: vm.os.type == "ubuntu"
 
-- name: Create a proper fstab for new system ({{ vm.host}} @{{ vm.org }})
+- name: Create a proper fstab for new system ({{ vm.name }} @{{ vm.org }})
   template:
-    dest: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/fstab
+    dest: /mnt/vms/{{ vm.org }}-{{ vm.name }}/etc/fstab
     group: root
     owner: root
-    mode: 'u=rw,g=r,o=r'
+    mode: 0644
     src: fstab.j2
 
-- name: Generate a proper simplified debian network configuration
+- name: Generate a proper simplified Debian network configuration
   template:
-    dest: /mnt/vms/{{ vm.org }}-{{ vm.host }}/etc/network/interfaces
+    dest: /mnt/vms/{{ vm.org }}-{{ vm.name }}/etc/network/interfaces
     group: root
     owner: root
-    mode: 'u=rw,g=r,o=r'
+    mode: 0644
     src: interfaces.j2
 
-- name: Logout from iscsi device if needed
+- name: Create directory for overriding networking.service
+  file:
+    path: /mnt/vms/{{ vm.org }}-{{ vm.name }}/etc/systemd/system/networking.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Prevent systemd from stopping the network in the VM
+  template:
+    dest: /mnt/vms/{{ vm.org }}-{{ vm.name }}/etc/systemd/system/networking.service.d/nostop.conf
+    owner: root
+    group: root
+    mode: 0644
+    src: network-nostop.conf
+
+- name: Log out from iSCSI device if needed
   systemd:
-    name: vm_iscsi@{{ vm.org }}-{{ vm.host }}.service
+    name: vm_iscsi@{{ vm.org }}-{{ vm.name }}.service
     state: stopped
   when: vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" and vm.boot_after_creation|default(xen_vman_default_boot_after_creation) != True
 
 - name: Boot new VM
   systemd:
-    name: vm@{{ vm.org }}-{{ vm.host }}.service
+    name: vm@{{ vm.org }}-{{ vm.name }}.service
     state: started
   when: vm.boot_after_creation|default(xen_vman_default_boot_after_creation) == True

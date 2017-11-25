@@ -1,4 +1,5 @@
 # {{ ansible_managed }}
+
 source-directory /etc/network/interfaces.d
 
 auto eth0
@@ -7,9 +8,9 @@ iface eth0 inet static
 	network {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('network') }}
 	netmask {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('netmask') }}
 	broadcast {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('broadcast') }}
-{% if xen_vman_nameserver is defined %}
-	dns-nameservers {{ xen_vman_nameserver|join(' ') }}
+{% if vm.nameserver|default(xen_vman_default_nameserver) is defined %}
+	dns-nameservers {{ vm.nameserver|default(xen_vman_default_nameserver)|join(' ') }}
 {% endif %}
-{% if xen_vman_gateway is defined %}
-	gateway {{ xen_vman_gateway }}
+{% if vm.gateway|default(xen_vman_default_gateway) is defined %}
+	gateway {{ vm.gateway|default(xen_vman_default_gateway) }}
 {% endif %}

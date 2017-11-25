@@ -1,9 +1,9 @@
 #!/bin/bash
 # {{ ansible_managed }}
 #
-# mounts or umounts the root filesystem of the given vm
+# Mounts or unmounts the root filesystem of the given VM
 #
-# command line arguments:
+# Command line arguments:
 #   -m|--mount                           mount the given vm
 #   -u|--umount                          umounts given vm
 #   -s|--systemd    <vm-org>-<vm-host>   specifies the vm
@@ -11,8 +11,8 @@
 #   -h|--host       <vm-host>            specifies the vm host
 #   -p|--mount_path <mount path>         specifies where to mount, defaults to /mnt/vms/<vm-org>-<vm-host>
 #
-# at least one of -m or -u must be given
-# either both of -o and -h or -s must be given
+# At least one of -m or -u must be given
+# Either both of -o and -h or -s must be given
 
 function mount_iscsi() {
 	local blk_dev="/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:$vm-lun-0"
@@ -20,7 +20,7 @@ function mount_iscsi() {
 	# login into iscsi for requested vm, needed for standalone starts(via script), do not so if started via systemd
 	[ ! -b "$blk_dev" -a -z "$INVOCATION_ID" ] && {
 		touch /tmp/.$vm.iscsi_started_by_mount_script
-		systemctl start vm_iscsi@$vm.service
+		systemctl start "vm_iscsi@$vm.service"
 	}
 
 	# wait for block device
@@ -86,12 +86,12 @@ done
 
 
 # Check for all arguments and exit if something is missing
-[ -n "$org" -a -n "$host" ]        && vm="$org-$host"  # vm is specified by org and host
+[ -n "$org" -a -n "$host" ]          && vm="$org-$host"  # vm is specified by org and host
 config_path="{{ xen_vman_vm_config_path }}/$vm.cfg"
-[ -z "$vm" ]                       && { echo "ERROR:   No vm specified"; exit 1; }  # Exit if no vm is specified
-[ -f "$config_path" ]              || { echo "ERROR:   Invalid vm specified ($vm)"; exit 1; }  # Exit if vm is not found
-[ -z "$action" ]                   && { echo "ERROR:   Exactly one of \"-m\" or \"-u\" must be specified"; exit 1; }
-systemctl is-active vm@$vm.service && { echo "ERROR:   Can't mount running vm ($vm)"; exit 1; }
+[ -z "$vm" ]                         && { echo "ERROR:   No vm specified"; exit 1; }  # Exit if no vm is specified
+[ -f "$config_path" ]                || { echo "ERROR:   Invalid vm specified ($vm)"; exit 1; }  # Exit if vm is not found
+[ -z "$action" ]                     && { echo "ERROR:   Exactly one of \"-m\" or \"-u\" must be specified"; exit 1; }
+systemctl is-active "vm@$vm.service" && { echo "ERROR:   Can't mount running vm ($vm)"; exit 1; }
 
 
 # Set the default mount path if not specified and create them
@@ -115,7 +115,7 @@ case "$action $(detect_storage_type)" in
 	"umount nfs")
 		umount "$mount_path" || err=$?
 		[ -f "/tmp/.$vm.iscsi_started_by_mount_script" ] && { # logout iscsi, when started by script (see func:mount_iscsi for future reference)
-			systemctl stop vm_iscsi@$vm.service
+			systemctl stop "vm_iscsi@$vm.service"
 			rm -v "/tmp/.$vm.iscsi_started_by_mount_script"
 		}
 		rmdir "$mount_path"

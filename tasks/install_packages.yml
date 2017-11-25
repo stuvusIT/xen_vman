@@ -1,3 +1,4 @@
+---
 - name: Install all required packages
   apt:
     name: "{{ item }}"

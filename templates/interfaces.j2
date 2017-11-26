@@ -14,6 +14,7 @@ iface eth0 inet {% if vm.storage_type|default(xen_vman_default_storage_type) == 
 	{% if vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" -%}
 		gateway {{ vm.gateway|default(xen_vman_default_gateway) }}
 	{% else -%}
+		{# The default route is not configured for manual networks -#}
 		post-up ip r a default via {{ vm.gateway|default(xen_vman_default_gateway) }}
 	{% endif %}
 {% endif %}

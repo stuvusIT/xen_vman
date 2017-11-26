@@ -6,7 +6,7 @@
   changed_when: False
 
 - name: Get old creation date from {{ vm.name }} @{{ vm.org }} (1/2)
-  shell: "sed -n 's/^# created at:[ ]\+//p' {{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.name }}.cfg"
+  shell: "sed -n 's/^# created at:[ ]\\+//p' {{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.name }}.cfg"
   register: creation_date
   when: vm_config_file.stat.exists
   changed_when: False
@@ -37,13 +37,13 @@
     owner: root
     mode: 0644
     src: iscsi_dev.j2
-  when: vm.storage_type|default(xen_vman_default_storage_type) == "iscsi"
+  when: "vm.storage_type|default(xen_vman_default_storage_type) == 'iscsi' and not vm.manual_root_disk|default(xen_vman_default_manual_root_disk)"
 
 - name: Untag VM storage type as iSCSI
   file:
     path: "{{ xen_vman_vm_config_path }}/.iscsi/{{ vm.org }}-{{ vm.name }}"
     state: absent
-  when: vm.storage_type|default(xen_vman_default_storage_type) != "iscsi"
+  when: "vm.storage_type|default(xen_vman_default_storage_type) != 'iscsi' or vm.manual_root_disk|default(xen_vman_default_manual_root_disk)"
 
 - name: Set VM auto boot mode
   systemd:

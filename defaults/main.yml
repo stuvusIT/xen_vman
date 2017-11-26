@@ -11,7 +11,6 @@ xen_vman_umount_timeout:                20
 
 xen_vman_default_nameserver:            [ 8.8.8.8, 4.4.4.4 ]
 
-xen_vman_iscsi_server:                  ""
 xen_vman_iscsi_base_wwn:                ""
 xen_vman_nameservers:                   []
 xen_vman_debootstrap_packages:          [ systemd, systemd-sysv, udev, resolvconf, openssh-server, sudo, python ]
@@ -36,4 +35,4 @@ xen_vman_default_mouse:                 True
 xen_vman_default_spicevdagent:          True
 xen_vman_default_share_clipboard:       True
 xen_vman_default_max_usb_redirections:  4
-xen_vman_default_additonal_xen_options: []
+xen_vman_default_additonal_xen_options: {}

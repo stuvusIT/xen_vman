@@ -43,7 +43,10 @@ kernel                  = "{{ vm.kernel|default(xen_vman_default_kernel) }}"
 {% if vm.storage_type|default(xen_vman_default_storage_type) == "nfs" and vm.cmdline is not defined %}
 cmdline                 = "root=/dev/nfs nfsroot=
                            {{- xen_vman_nfsroot_base }}{{ vm.org }}/{{ vm.name }}-root ip=
-                           {{- vm.connection_ip|default(vm['interfaces'][0]['ip']|ipaddr('address/prefix'))|default('dhcp') }}"
+                           {%- if vm.connection_ip|default(vm['interfaces'][0]['ip']) is defined %}
+                             {{- vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('address') }}:::
+                             {{- vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('netmask') }}::eth0
+                           {%- else %}::::::dhcp{% endif %}"
 {% elif vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" and vm.cmdline is not defined %}
 cmdline                 = "root=/dev/xvda rootfstype={{ vm.filesystem|default(xen_vman_default_filesystem) }} rw"
 {% else %}

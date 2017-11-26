@@ -3,7 +3,8 @@
 source-directory /etc/network/interfaces.d
 
 auto eth0
-iface eth0 inet static
+iface eth0 inet {% if vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" %}static{% else %}manual{% endif %}
+
 	address {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('address') }}
 	network {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('network') }}
 	netmask {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('netmask') }}
@@ -12,5 +13,9 @@ iface eth0 inet static
 	dns-nameservers {{ vm.nameserver|default(xen_vman_default_nameserver)|join(' ') }}
 {% endif %}
 {% if vm.gateway|default(xen_vman_default_gateway) is defined %}
-	gateway {{ vm.gateway|default(xen_vman_default_gateway) }}
+	{% if vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" -%}
+		gateway {{ vm.gateway|default(xen_vman_default_gateway) }}
+	{% else -%}
+		post-up ip r a default via {{ vm.gateway|default(xen_vman_default_gateway) }}
+	{% endif %}
 {% endif %}

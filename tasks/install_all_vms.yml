@@ -6,7 +6,7 @@
   changed_when: False
 
 - name: Get old creation date from {{ vm.name }} @{{ vm.org }} (1/2)
-  shell: "sed -n 's/^# created at:    //p' {{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.name }}.cfg"
+  shell: "sed -n 's/^# created at:[ ]\+//p' {{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.name }}.cfg"
   register: creation_date
   when: vm_config_file.stat.exists
   changed_when: False

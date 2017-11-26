@@ -9,9 +9,7 @@ iface eth0 inet {% if vm.storage_type|default(xen_vman_default_storage_type) == 
 	network {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('network') }}
 	netmask {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('netmask') }}
 	broadcast {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('broadcast') }}
-{% if vm.nameserver|default(xen_vman_default_nameserver) is defined %}
 	dns-nameservers {{ vm.nameserver|default(xen_vman_default_nameserver)|join(' ') }}
-{% endif %}
 {% if vm.gateway|default(xen_vman_default_gateway) is defined %}
 	{% if vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" -%}
 		gateway {{ vm.gateway|default(xen_vman_default_gateway) }}

@@ -9,10 +9,9 @@ xen_vman_iscsi_logout_timeout:          40
 xen_vman_mount_timeout:                 20
 xen_vman_umount_timeout:                20
 
-xen_vman_default_nameserver:            [ 8.8.8.8, 4.4.4.4 ]
 
 xen_vman_iscsi_base_wwn:                ""
-xen_vman_nameservers:                   []
+xen_vman_default_nameserver:            [ 8.8.8.8, 4.4.4.4 ]
 xen_vman_debootstrap_packages:          [ systemd, systemd-sysv, udev, resolvconf, openssh-server, sudo, python ]
 
 xen_vman_default_org:                   default

@@ -4,14 +4,14 @@
 # {{ vm.name }} @{{ vm.org}}
 # {{ vm.description | default('') }}
 #-------------------------------------------------------------------------------
-# bootstrapped OS: {{ vm.os.type }} {{ vm.os.version }}
+# initial OS:   {{ vm.os.type }} {{ vm.os.version }}
 #
-# ram:             {{ vm.memory|default(xen_vman_default_memory) }}
-# vcpus:           {{ vm.vcpus|default(xen_vman_default_vcpus) }}
+# ram:          {{ vm.memory|default(xen_vman_default_memory) }}
+# vcpus:        {{ vm.vcpus|default(xen_vman_default_vcpus) }}
 #
-# created at:      {{ creation_date }}
-# auto boot:       {{ vm.auto_boot|default(xen_vman_default_auto_boot) }}
-# storage type:    {{ vm.storage_type|default(xen_vman_default_storage_type) }}
+# created at:   {{ creation_date }}
+# auto boot:    {{ vm.auto_boot|default(xen_vman_default_auto_boot) }}
+# storage type: {{ vm.storage_type|default(xen_vman_default_storage_type) }}
 ################################################################################
 
 name                    = "{{ vm.org }}-{{ vm.name }}"
@@ -28,7 +28,7 @@ vif                     = [ {% for interface in vm.interfaces -%}
 	{%- if not loop.last -%}, {% endif -%}{# check for last network interface #}
 {%- endfor %} ]
 
-disk                    = [ {% if vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" -%}
+disk                    = [ {% if vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" and not vm.manual_root_disk|default(xen_vman_default_manual_root_disk) -%}
                               '/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:{{ vm.org }}-{{ vm.name }}-lun-0,raw,xvda,rw'
                               {%- if vm.disks|default(xen_vman_default_disks)|length > 0 -%}, {% endif -%}
                             {%- endif -%}

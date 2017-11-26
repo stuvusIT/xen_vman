@@ -49,8 +49,9 @@ Also, filesystem utilities for filesystems used by the guests are required.
 | `xen_vman_default_cpu_str`               | string                | `all,^1`                                                            | List of which CPUs the guest is allowed to use [¹](#xen_doc)                                                                          |
 | `xen_vman_default_storage_type`          | string                | `nfs`                                                               | Default filesystem backend to use. Valid choices are `nfs` and `iscsi`                                                                |
 | `xen_vman_default_disks`                 | list of strings       | `[]`                                                                | Xen disk specification (see also [xl-disk-configuration.txt](http://xenbits.xen.org/docs/4.8-testing/misc/xl-disk-configuration.txt)) |
+| `xen_vman_default_manual_root_disk`      | boolean               | `False`                                                             | Use only disk specified by `xen_vman_default_disks` or `vm.disks`                                                                     |
 | `xen_vman_default_filesystem`            | string                | `ext4`                                                              | Filesystem to use for VMs with iSCSI root disk                                                                                        |
-| `xen_vman_default_gateway`               | string                | ` `                                                                 | Default gateway of the new VM
+| `xen_vman_default_gateway`               | string                | ` `                                                                 | Default gateway of the new VM                                                                                                         |
 | `xen_vman_default_nameserver`            | list of strings       | `[8.8.8.8, 8.8.4.4]`                                                | Nameservers to initially set for the new VMs                                                                                          |
 | `xen_vman_default_boot_after_creation`   | boolean               | `True`                                                              | Start the VM after installation                                                                                                       |
 | `xen_vman_default_auto_boot`             | boolean               | `True`                                                              | Start VM when hypervisor boots                                                                                                        |
@@ -77,32 +78,33 @@ VMs are defined as elements of the `xen_vman_vms` list.
 
 | Name                     | Type                  | Required | Description                                                                             |
 |--------------------------|-----------------------|:--------:|-----------------------------------------------------------------------------------------|
-| `org`                    | string                | Y        | Organization which owns this VM                                                         |
-| `name`                   | string                | Y        | Name of this VM                                                                         |
-| `memory`                 | integer               | N        | Amount of memory to assign to this VM. The number is treated as amount of megabytes     |
-| `vcpus`                  | integer               | N        | Amount of virtual CPU cores                                                             |
-| `cpu_str`                | string                | N        | List of which CPU cores the VM is allowed to use. See above for more information        |
-| `interfaces`             | list of dicts         | Y        | Virtual network interfaces. See [below](#vm-interfaces)                                 |
-| `connection_ip`          | string                | N        | IP of this VM. Will be configured as static IP. First interface IP is used when omitted |
-| `storage_type`           | string                | N        | Storage backend of the root filesystem. See above for valid options                     |
-| `disks`                  | list of strings       | N        | Additional Xen disk specifications. See above for more information                      |
-| `filesystem`             | string                | N        | When using iSCSI, this filesystem is used for the root                                  |
-| `os.type`                | string                | Y        | Type of the operating system                                                            |
-| `os.version`             | string                | Y        | Version of the chosen operating system                                                  |
-| `boot_after_creation`    | boolean               | N        | Whether to boot the VM after creation                                                   |
-| `auto_boot`              | boolean               | N        | Whether to boot the VM on hypervisor boot                                               |
-| `builder`                | string                | N        | Select the builder for this VM (`generic` or `hvm`)                                     |
-| `kernel`                 | string                | N        | (For generic VMs only) Path to the kernel to boot                                       |
-| `initrd`                 | string                | N        | (For generic VMs only) Path to the initrd to pass to the kernel                         |
-| `cmdline`                | string                | N        | (For generic VMs only) Command line to pass to the kernel                               |
-| `spice`                  | boolean               | N        | (For generic VMs only) Enable SPICE                                                     |
-| `spicehost`              | string                | N        | (For HVM VMs only) Address for the SPICE server to listen on                            |
-| `spiceport`              | integer               | N        | (For HVM VMs only) Port for the SPICE server to listen on                               |
-| `spicepasswd`            | string                | N        | (For HVM VMs only) Password required when connecting to the SPICE server                |
-| `share_clipboard`        | boolean               | N        | (For HVM VMs only) Share clipboard via SPICE                                            |
-| `spicevdagent`           | boolean               | N        | (For HVM VMs only) Enable the SPICE vdagent                                             |
-| `max_usb_redirections`   | integer               | N        | (For HVM VMs only) Maximum amount of USB redirections                                   |
-| `additional_xen_options` | xl.cfg key value dict | N        | Add additional Xen options                                                              |
+| `org`                    | string                |     Y    | Organization which owns this VM                                                         |
+| `name`                   | string                |     Y    | Name of this VM                                                                         |
+| `memory`                 | integer               |     N    | Amount of memory to assign to this VM. The number is treated as amount of megabytes     |
+| `vcpus`                  | integer               |     N    | Amount of virtual CPU cores                                                             |
+| `cpu_str`                | string                |     N    | List of which CPU cores the VM is allowed to use. See above for more information        |
+| `interfaces`             | list of dicts         |     Y    | Virtual network interfaces. See [below](#vm-interfaces)                                 |
+| `connection_ip`          | string                |     N    | IP of this VM. Will be configured as static IP. First interface IP is used when omitted |
+| `storage_type`           | string                |     N    | Storage backend of the root filesystem. See above for valid options                     |
+| `disks`                  | list of strings       |     N    | Additional Xen disk specifications. See above for more information                      |
+| `manual_root_disk`       | boolean               |     N    | Use only disk specified by `xen_vman_default_disks` or `vm.disk`                        |
+| `filesystem`             | string                |     N    | When using iSCSI, this filesystem is used for the root                                  |
+| `os.type`                | string                |     Y    | Type of the operating system                                                            |
+| `os.version`             | string                |     Y    | Version of the chosen operating system                                                  |
+| `boot_after_creation`    | boolean               |     N    | Whether to boot the VM after creation                                                   |
+| `auto_boot`              | boolean               |     N    | Whether to boot the VM on hypervisor boot                                               |
+| `builder`                | string                |     N    | Select the builder for this VM (`generic` or `hvm`)                                     |
+| `kernel`                 | string                |     N    | (For generic VMs only) Path to the kernel to boot                                       |
+| `initrd`                 | string                |     N    | (For generic VMs only) Path to the initrd to pass to the kernel                         |
+| `cmdline`                | string                |     N    | (For generic VMs only) Command line to pass to the kernel                               |
+| `spice`                  | boolean               |     N    | (For generic VMs only) Enable SPICE                                                     |
+| `spicehost`              | string                |     N    | (For HVM VMs only) Address for the SPICE server to listen on                            |
+| `spiceport`              | integer               |     N    | (For HVM VMs only) Port for the SPICE server to listen on                               |
+| `spicepasswd`            | string                |     N    | (For HVM VMs only) Password required when connecting to the SPICE server                |
+| `share_clipboard`        | boolean               |     N    | (For HVM VMs only) Share clipboard via SPICE                                            |
+| `spicevdagent`           | boolean               |     N    | (For HVM VMs only) Enable the SPICE vdagent                                             |
+| `max_usb_redirections`   | integer               |     N    | (For HVM VMs only) Maximum amount of USB redirections                                   |
+| `additional_xen_options` | xl.cfg key value dict |     N    | Add additional Xen options                                                              |
 
 # VM interfaces
 

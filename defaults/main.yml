@@ -9,8 +9,6 @@ xen_vman_iscsi_logout_timeout:          40
 xen_vman_mount_timeout:                 20
 xen_vman_umount_timeout:                20
 
-
-xen_vman_iscsi_base_wwn:                ""
 xen_vman_default_nameserver:            [ 8.8.8.8, 4.4.4.4 ]
 xen_vman_debootstrap_packages:          [ systemd, systemd-sysv, udev, resolvconf, openssh-server, sudo, python ]
 
@@ -20,6 +18,7 @@ xen_vman_default_memory:                1024
 xen_vman_default_vcpus:                 2
 xen_vman_default_cpu_str:               all,^1
 xen_vman_default_disks:                 []
+xen_vman_default_manual_root_disk:      False
 xen_vman_default_filesystem:            ext4
 xen_vman_default_os_type:               ubuntu
 xen_vman_default_os_version:            xenial

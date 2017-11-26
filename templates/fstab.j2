@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+{% set fmtstr='%-50s%-20s%-8s%-17s%s' -%}
+{{ fmtstr|format('# <filesystem>', '<mountpoint>', '<type>', '<options>', '<dump/pass>') }}
+
+{% set mount_options='remount,rw' -%}
+{%- if vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" -%}
+	{%- set root_device='/dev/xvda' -%}
+	{%- set filesystem=vm.filesystem|default(xen_vman_default_filesystem) -%}
+	{%- set pass_str='0 1' -%}
+{%- elif vm.storage_type|default(xen_vman_default_storage_type) == "nfs" -%}
+	{%- set root_device='%s:%s/%s'|format(xen_vman_nfsroot_base, vm.org, vm.name) -%}
+	{%- set filesystem='nfs' -%}
+	{%- set pass_str='0 0' -%}
+{%- endif %}
+
+{{ fmtstr|format(root_device, '/', filesystem, mount_options, pass_str) }}

@@ -1,0 +1,37 @@
+---
+xen_vman_vms:                           []
+xen_vman_vm_config_path:                /etc/xen/vms
+
+xen_vman_start_timeout:                 15
+xen_vman_stop_timeout:                  300
+xen_vman_iscsi_login_timeout:           40
+xen_vman_iscsi_logout_timeout:          40
+xen_vman_mount_timeout:                 20
+xen_vman_umount_timeout:                20
+
+
+xen_vman_iscsi_base_wwn:                ""
+xen_vman_default_nameserver:            [ 8.8.8.8, 4.4.4.4 ]
+xen_vman_debootstrap_packages:          [ systemd, systemd-sysv, udev, resolvconf, openssh-server, sudo, python ]
+
+xen_vman_default_org:                   default
+xen_vman_default_storage_type:          nfs
+xen_vman_default_memory:                1024
+xen_vman_default_vcpus:                 2
+xen_vman_default_cpu_str:               all,^1
+xen_vman_default_disks:                 []
+xen_vman_default_filesystem:            ext4
+xen_vman_default_os_type:               ubuntu
+xen_vman_default_os_version:            xenial
+xen_vman_default_boot_after_creation:   True
+xen_vman_default_auto_boot:             True
+xen_vman_default_builder:               generic
+xen_vman_default_cmdline:               ""
+xen_vman_default_spice:                 False
+xen_vman_default_spicehost:             0.0.0.0
+xen_vman_default_spiceport:             3100
+xen_vman_default_mouse:                 True
+xen_vman_default_spicevdagent:          True
+xen_vman_default_share_clipboard:       True
+xen_vman_default_max_usb_redirections:  4
+xen_vman_default_additonal_xen_options: {}

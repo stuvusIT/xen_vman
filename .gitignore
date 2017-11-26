@@ -1,0 +1,19 @@
+# git
+*.orig
+# filesystem stuff
+.fuse_hidden*
+.nfs*
+# backups and swaps
+._*
+*~
+# vim swap
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
+# vim session
+Session.vim
+# vim netrw history
+.netrwhist
+# vim auto-generated tag files
+tags

@@ -1,0 +1,19 @@
+# {{ ansible_managed }}
+[Unit]
+Description             = Mounts rootfs for VM %i
+Documentation           = https://github.com/stuvusIT/xen_vman
+Requires                = vm_iscsi@%i.service
+After                   = vm_iscsi@%i.service
+Conflicts               = vm@%i.service
+ConditionPathExists     = {{ xen_vman_vm_config_path }}/%i.cfg
+
+[Service]
+Type                    = oneshot
+RemainAfterExit         = yes
+ExecStart               = /etc/xen/scripts/mount_vm.sh -s %i -m
+ExecStop                = /etc/xen/scripts/mount_vm.sh -s %i -u
+TimeoutStartSec         = {{ [ xen_vman_mount_timeout, xen_vman_iscsi_login_timeout ] | max }}
+TimeoutStopSec          = {{ xen_vman_umount_timeout }}
+
+[Install]
+WantedBy                = multi-user.target

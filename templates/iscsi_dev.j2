@@ -1,0 +1,4 @@
+{{ ansible_managed }}
+
+This file indicates that {{ vm.name }}@{{ vm.org }} requires an iscsi device to be functional.
+systemd will check for this file is a vm is started. See »/etc/systemd/system/vm_iscsi@.service« for future reference.

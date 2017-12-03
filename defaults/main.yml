@@ -11,6 +11,7 @@ xen_vman_umount_timeout:                20
 
 xen_vman_default_nameserver:            [ 8.8.8.8, 4.4.4.4 ]
 xen_vman_debootstrap_packages:          [ systemd, systemd-sysv, udev, resolvconf, openssh-server, sudo, python ]
+xen_vman_default_auto_install:          True
 
 xen_vman_default_org:                   default
 xen_vman_default_storage_type:          nfs

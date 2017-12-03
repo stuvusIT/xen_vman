@@ -67,6 +67,7 @@ Also, filesystem utilities for filesystems used by the guests are required.
 | `xen_vman_default_spicevdagent`          | boolean               | True                                                                | Enables SPICE vdagent, this is automatically enabled when clipboard sharing is enabled [¹](#xen_doc)                                  |
 | `xen_vman_default_max_usb_redirections`  | integer (0-4)         | `4`                                                                 | Enable SPICE USB redirections [¹](#xen_doc)                                                                                           |
 | `xen_vman_default_additonal_xen_options` | xl.cfg key value dict | `[]`                                                                | Add additional Xen options                                                                                                            |
+| `xen_vman_default_auto_install`          | boolean               | `True`                                                              | Install specified OS automatically, when no xen configuration is found                                                                |
 
 
 <a id="xen_doc">¹</a> For further reference see [man xl.cfg](http://xenbits.xen.org/docs/4.8-testing/man/xl.cfg.5.html)
@@ -105,6 +106,7 @@ VMs are defined as elements of the `xen_vman_vms` list.
 | `spicevdagent`           | boolean               |     N    | (For HVM VMs only) Enable the SPICE vdagent                                             |
 | `max_usb_redirections`   | integer               |     N    | (For HVM VMs only) Maximum amount of USB redirections                                   |
 | `additional_xen_options` | xl.cfg key value dict |     N    | Add additional Xen options                                                              |
+| `auto_install`           | boolean               |     N    | Install specified OS automatically, when no xen configuration is found                  |
 
 # VM interfaces
 

@@ -52,4 +52,4 @@
 
 - name: Install VM {{ vm.name }} @{{ vm.org }} if needed
   include_tasks: install_system.yml
-  when: not vm_config_file.stat.exists
+  when: not vm_config_file.stat.exists and vm.auto_install|default(xen_vman_default_auto_install)

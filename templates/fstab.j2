@@ -8,7 +8,7 @@
 	{%- set filesystem=vm.filesystem|default(xen_vman_default_filesystem) -%}
 	{%- set pass_str='0 1' -%}
 {%- elif vm.storage_type|default(xen_vman_default_storage_type) == "nfs" -%}
-	{%- set root_device='%s:%s/%s'|format(xen_vman_nfsroot_base, vm.org, vm.name) -%}
+	{%- set root_device='%s%s/%s-root'|format(xen_vman_nfsroot_base, vm.org, vm.name) -%}
 	{%- set filesystem='nfs' -%}
 	{%- set pass_str='0 0' -%}
 {%- endif %}

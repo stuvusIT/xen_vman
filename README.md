@@ -116,7 +116,7 @@ All of them are optional.
 | Name      | Type     | Description                                  |
 |-----------|----------|----------------------------------------------|
 | `ip`      | `string` | IP address of this interface                 |
-| `map`     | `string` | MAC address of this interface                |
+| `mac`     | `string` | MAC address of this interface                |
 | `bridge`  | `string` | Bridge to attach the interface to            |
 | `xen_str` | `string` | Additional Xen parameters for this interface |
 

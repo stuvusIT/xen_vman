@@ -10,7 +10,6 @@ Requires                = vm_iscsi@%i.service
 After                   = vm_iscsi@%i.service
 Conflicts               = vm_mount@%i.service
 ConditionPathExists     = {{ xen_vman_vm_config_path }}/%i.cfg
-ConditionVirtualization = xen
 
 [Service]
 Type                    = forking

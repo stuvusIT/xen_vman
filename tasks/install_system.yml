@@ -30,14 +30,17 @@
 
 - name: Deploy current public key for {{ ansible_user }} at new VM {{ vm.name }} @{{ vm.org }}
   copy:
-    content: "
-      {% if ansible_ssh_private_key_file is defined %}
-        {{- ansible_ssh_private_key_file -}}
-      {% else %}
-        {{- xen_vman_public_keys | join('\n') -}}
-      {% endif %}"
+    src: "{{ ansible_ssh_private_key_file }}.pub"
     dest: "/mnt/vms/{{ vm.org }}-{{ vm.name }}/home/{{ ansible_user }}/.ssh/authorized_keys"
     mode: 0600
+  when: ansible_ssh_private_key_file is defined
+
+- name: Deploy specified public keys for {{ ansible_user }} at new VM {{ vm.name }} @{{ vm.org }}
+  copy:
+    content: "{{ xen_vman_public_keys | join('\n') }}"
+    dest: "/mnt/vms/{{ vm.org }}-{{ vm.name }}/home/{{ ansible_user }}/.ssh/authorized_keys"
+    mode: 0600
+  when: ansible_ssh_private_key_file is not defined
 
 # Set the correct owner in chroot, since ansible is not able to specify the uid and guid numeric
 - name: Set correct owner for authorized_keys at {{ vm.name }} @{{ vm.org }}

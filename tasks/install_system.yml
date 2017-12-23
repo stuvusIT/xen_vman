@@ -28,13 +28,6 @@
     mode: 0700
     state: directory
 
-- name: Deploy current public key for {{ ansible_user }} at new VM {{ vm.name }} @{{ vm.org }}
-  copy:
-    src: "{{ ansible_ssh_private_key_file }}"
-    dest: "/mnt/vms/{{ vm.org }}-{{ vm.name }}/home/{{ ansible_user }}/.ssh/authorized_keys"
-    mode: 0600
-  when: ansible_ssh_private_key_file is defined
-
 - name: Deploy specified public keys for {{ ansible_user }} at new VM {{ vm.name }} @{{ vm.org }}
   copy:
     content: "{{ xen_vman_public_keys | join('\n') }}"

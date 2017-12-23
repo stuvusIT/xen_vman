@@ -22,8 +22,9 @@ Mount or umount the root filesystem from the given VM. For example `systemd star
 
 ## Requirements
 
-A Xen host machine running a Debian host system.
-Also, filesystem utilities for filesystems used by the guests are required.
+- A Xen host machine running a Debian host system
+- Filesystem utilities for filesystems used by the guests are required
+- `python-netaddr` on the executing machine
 
 ## Role Variables
 

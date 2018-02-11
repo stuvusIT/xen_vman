@@ -62,6 +62,14 @@
     mode: 0644
     src: interfaces.j2
 
+- name: Set hostname for new vm ({{ vm.name }} @{{ vm.org }})
+  copy:
+    content: "{{ vm.name }}"
+    group: root
+    owner: root
+    mode: 0644
+    dest: /mnt/vms/{{ vm.org }}-{{ vm.name }}/etc/hostname
+
 - name: Create directory for overriding networking.service
   file:
     path: /mnt/vms/{{ vm.org }}-{{ vm.name }}/etc/systemd/system/networking.service.d

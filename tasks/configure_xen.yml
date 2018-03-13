@@ -1,0 +1,16 @@
+---
+- name: Set network default script
+  lineinfile:
+    line: "vif.default.script=\"{{ xen_vman_default_network_script }}\""
+    regexp: '^vif.default.script=".*"$'
+    insertafter: '^# default vif script to use.*'
+    path: /etc/xen/xl.conf
+
+- name: Set network default bridge
+  lineinfile:
+    line: "vif.default.bridge=\"{{ xen_vman_default_network_bridge }}\""
+    regexp: '^vif.default.bridge=".*"$'
+    insertafter: '^# default bridge device to use.*'
+    path: /etc/xen/xl.conf
+  when: xen_vman_default_network_bridge is defined
+

@@ -35,3 +35,4 @@ xen_vman_default_spicevdagent:          True
 xen_vman_default_share_clipboard:       True
 xen_vman_default_max_usb_redirections:  4
 xen_vman_default_additonal_xen_options: {}
+xen_vman_default_network_script:        vif-bridge

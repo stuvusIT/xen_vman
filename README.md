@@ -114,8 +114,8 @@ VMs are defined as elements of the `xen_vman_vms` list.
 | `spicevdagent`           | boolean                         |     N    | (For HVM VMs only) Enable the SPICE vdagent                                             |
 | `max_usb_redirections`   | integer                         |     N    | (For HVM VMs only) Maximum amount of USB redirections                                   |
 | `additional_xen_options` | xl.cfg key value dict           |     N    | Add additional Xen options[²](#xen_doc)                                                 |
-| `auto_install`           | boolean                         |     N    | Install specified OS automatically, when no xen configuration is found                  |
-| `reinstall`              | boolean                         |     N    | Reinstall the VM every Time ansible is running when set to `True`                       |
+| `auto_install`           | boolean                         |     N    | Install specified OS automatically, when no Xen configuration is found                  |
+| `reinstall`              | boolean                         |     N    | Reinstall the VM every time Ansible is running when set to `True`                       |
 
 
 ### VM interfaces

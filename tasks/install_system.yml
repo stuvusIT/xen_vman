@@ -1,12 +1,12 @@
 ---
-- name: Destroy VM({{ vm.name }} @{{ vm.org }}) if running
+- name: Destroy VM ({{ vm.name }} @{{ vm.org }}) if running
   shell: xl destroy {{ vm.org }}-{{ vm.name }}
   register: xl_destroy
   ignore_errors: yes
   changed_when: "'invalid domain' not in xl_destroy.stderr"
   when: vm_config_file.stat.exists
 
-- name: Make sure VM({{ vm.name }} @{{ vm.org }}) is stopped
+- name: Make sure VM ({{ vm.name }} @{{ vm.org }}) is stopped
   systemd:
     name: vm@{{ vm.org }}/{{ vm.name }}.service
     state: stopped
@@ -22,7 +22,7 @@
   shell: mkfs.{{ vm.filesystem|default(xen_vman_default_filesystem) }} "/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:{{ vm.org }}-{{ vm.name }}-lun-0"
   when: vm.storage_type|default(xen_vman_default_storage_type) == "iscsi"
 
-- name: Make sure VM({{ vm.name }} @{{ vm.org }}) root is mounted
+- name: Make sure VM ({{ vm.name }} @{{ vm.org }}) root is mounted
   systemd:
     name: vm_mount@{{ vm.org }}/{{ vm.name }}.service
     state: started

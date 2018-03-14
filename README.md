@@ -156,4 +156,3 @@ This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 Inter
 ## Author Information
 
 - [Markus Mroch (Mr. Pi)](https://github.com/Mr-Pi) _markus.mroch@stuvus.uni-stuttgart.de_
-- [Janne Heß](https://github.com/dasJ) _janne.hess@stuvus.uni-stuttgart.de_

@@ -1,4 +1,17 @@
 ---
+- name: Destroy VM({{ vm.name }} @{{ vm.org }}) if running
+  shell: xl destroy {{ vm.org }}-{{ vm.name }}
+  register: xl_destroy
+  ignore_errors: yes
+  changed_when: "'invalid domain' not in xl_destroy.stderr"
+  when: vm_config_file.stat.exists
+
+- name: Make sure VM({{ vm.name }} @{{ vm.org }}) is stopped
+  systemd:
+    name: vm@{{ vm.org }}/{{ vm.name }}.service
+    state: stopped
+  when: vm_config_file.stat.exists
+
 - name: Make sure iSCSI device for {{ vm.name }} @{{ vm.org }} is logged in
   systemd:
     name: vm_iscsi@{{ vm.org }}/{{ vm.name }}.service
@@ -9,10 +22,15 @@
   shell: mkfs.{{ vm.filesystem|default(xen_vman_default_filesystem) }} "/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:{{ vm.org }}-{{ vm.name }}-lun-0"
   when: vm.storage_type|default(xen_vman_default_storage_type) == "iscsi"
 
-- name: Make sure VM root is mounted
+- name: Make sure VM({{ vm.name }} @{{ vm.org }}) root is mounted
   systemd:
     name: vm_mount@{{ vm.org }}/{{ vm.name }}.service
     state: started
+
+# using shell module here since there is no beautiful way to delete all files and directory inside a given path, without removing the path itself
+- name: Remove old system on VM {{ vm.name }} @{{ vm.org }}
+  shell: rm -rf /mnt/vms/{{ vm.org }}-{{ vm.name }}/*
+  when: ( vm.reinstall|default(False) or vm_config_file.stat.exists ) and vm.storage_type|default(xen_vman_default_storage_type) != "iscsi"
 
 - name: Install {{ vm.os.type }} {{ vm.os.version }} at {{ vm.name }} @{{ vm.org }}
   shell: debootstrap --variant minbase --include {{ xen_vman_debootstrap_packages | join(',') }} {{ vm.os.version }} /mnt/vms/{{ vm.org }}-{{ vm.name }}

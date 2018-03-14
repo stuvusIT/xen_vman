@@ -8,19 +8,19 @@
 - name: Get old creation date from {{ vm.name }} @{{ vm.org }} (1/2)
   shell: "sed -n 's/^# created at:[ ]\\+//p' {{ xen_vman_vm_config_path }}/{{ vm.org }}-{{ vm.name }}.cfg"
   register: creation_date
-  when: vm_config_file.stat.exists
+  when: vm_config_file.stat.exists and not vm.reinstall|default(False)
   changed_when: False
 
 - name: Get old creation date from {{ vm.name }} @{{ vm.org }} (2/2)
   set_fact:
     creation_date: "{{ creation_date.stdout }}"
-  when: vm_config_file.stat.exists
+  when: vm_config_file.stat.exists and not vm.reinstall|default(False)
   changed_when: False
 
 - name: Set creation date for {{ vm.name }} @{{ vm.org }}
   set_fact:
     creation_date: "{{ ansible_date_time.iso8601 }}"
-  when: not vm_config_file.stat.exists
+  when: not vm_config_file.stat.exists or vm.reinstall|default(False)
 
 - name: Install Xen configuration for {{ vm.name }} @{{ vm.org }}
   template:
@@ -52,4 +52,4 @@
 
 - name: Install VM {{ vm.name }} @{{ vm.org }} if needed
   include_tasks: install_system.yml
-  when: not vm_config_file.stat.exists and vm.auto_install|default(xen_vman_default_auto_install)
+  when: ( not vm_config_file.stat.exists and vm.auto_install|default(xen_vman_default_auto_install) ) or vm.reinstall|default(False)

@@ -34,11 +34,11 @@
 
 - name: Install {{ vm.os.type }} {{ vm.os.version }} at {{ vm.name }} @{{ vm.org }}
   shell: debootstrap --variant minbase --include {{ xen_vman_debootstrap_packages | join(',') }} {{ vm.os.version }} /mnt/vms/{{ vm.org }}-{{ vm.name }}
-  when: vm.os.type == "ubuntu"
+  when: vm.os.type == "ubuntu" or vm.os.type == "debian"
 
 - name: Create current Ansible user at {{ vm.name }} @{{ vm.org }}
   shell: chroot /mnt/vms/{{ vm.org }}-{{ vm.name }} /usr/sbin/useradd -g users -G sudo -m "{{ ansible_user }}"
-  when: vm.os.type == "ubuntu"  # This check is needed since different distributions use different default groups for sudo
+  when: vm.os.type == "ubuntu" or vm.os.type == "debian"  # This check is needed since different distributions use different default groups for sudo
 
 - name: Create .ssh directory for {{ ansible_user }} at {{ vm.name }} @{{ vm.org }}
   file:
@@ -62,7 +62,7 @@
     regexp: '^%sudo\s'
     line: '%sudo   ALL=(ALL) NOPASSWD: ALL'
     path: /mnt/vms/{{ vm.org }}-{{ vm.name }}/etc/sudoers
-  when: vm.os.type == "ubuntu"
+  when: vm.os.type == "ubuntu" or vm.os.type == "debian"
 
 - name: Create a proper fstab for new system ({{ vm.name }} @{{ vm.org }})
   template:

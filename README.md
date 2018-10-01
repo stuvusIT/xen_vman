@@ -56,6 +56,7 @@ Mount or umount the root filesystem from the given VM. For example `systemd star
 | `xen_vman_default_manual_root_disk`      | boolean                        |                              `False`                              | Use only disk specified by `xen_vman_default_disks` or `vm.disks`                                                                     |
 | `xen_vman_default_filesystem`            | string                         |                               `ext4`                              | Filesystem to use for VMs with iSCSI root disk                                                                                        |
 | `xen_vman_default_gateway`               | string                         |       _required for a default route on newly installed vms_       | Default gateway of the new VM                                                                                                         |
+| `xen_vman_default_mtu`                   | integer                        |                                                                   | Default MTU for the new VM                                                                                                            |
 | `xen_vman_default_nameserver`            | list of strings                |                        `[8.8.8.8, 8.8.4.4]`                       | Nameservers to initially set for the new VMs                                                                                          |
 | `xen_vman_default_boot_after_creation`   | boolean                        |                               `True`                              | Start the VM after installation                                                                                                       |
 | `xen_vman_default_auto_boot`             | boolean                        |                               `True`                              | Start VM when hypervisor boots                                                                                                        |
@@ -123,12 +124,14 @@ VMs are defined as elements of the `xen_vman_vms` list.
 Each network interface may have the following options.
 All of them are optional.
 
-| Name      | Type     | Description                                  |
-|-----------|----------|----------------------------------------------|
-| `ip`      | `string` | IP address of this interface                 |
-| `mac`     | `string` | MAC address of this interface                |
-| `bridge`  | `string` | Bridge to attach the interface to            |
-| `xen_str` | `string` | Additional Xen parameters for this interface |
+| Name      | Type      | Description                                  |
+|-----------|-----------|----------------------------------------------|
+| `ip`      | `string`  | IP address of this interface                 |
+| `mac`     | `string`  | MAC address of this interface                |
+| `mtu`     | `integer` | MTU of this interface                        |
+| `bridge`  | `string`  | Bridge to attach the interface to            |
+| `xen_str` | `string`  | Additional Xen parameters for this interface |
+
 
 
 ## Example Playbook

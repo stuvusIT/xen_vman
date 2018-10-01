@@ -13,7 +13,6 @@ xen_vman_default_nameserver:            [ 8.8.8.8, 4.4.4.4 ]
 xen_vman_debootstrap_packages:          [ systemd, systemd-sysv, udev, openssh-server, sudo, python, iproute2, ifupdown ]
 xen_vman_default_auto_install:          True
 
-xen_vman_default_org:                   default
 xen_vman_default_storage_type:          nfs
 xen_vman_default_memory:                1024
 xen_vman_default_vcpus:                 2
@@ -21,8 +20,6 @@ xen_vman_default_cpu_str:               all,^1
 xen_vman_default_disks:                 []
 xen_vman_default_manual_root_disk:      False
 xen_vman_default_filesystem:            ext4
-xen_vman_default_os_type:               ubuntu
-xen_vman_default_os_version:            xenial
 xen_vman_default_boot_after_creation:   True
 xen_vman_default_auto_boot:             True
 xen_vman_default_builder:               generic

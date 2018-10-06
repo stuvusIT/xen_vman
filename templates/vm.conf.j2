@@ -40,14 +40,14 @@ disk                    = [ {% if vm.storage_type|default(xen_vman_default_stora
 
 ramdisk                 = "{{ vm.initrd|default(xen_vman_default_initrd) }}"
 kernel                  = "{{ vm.kernel|default(xen_vman_default_kernel) }}"
-{% if vm.storage_type|default(xen_vman_default_storage_type) == "nfs" and vm.cmdline is not defined %}
+{% if vm.storage_type|default(xen_vman_default_storage_type) == "nfs" and vm.cmdline is not defined and xen_vman_default_cmdline is not defined %}
 cmdline                 = "root=/dev/nfs nfsroot=
                            {{- xen_vman_nfsroot_base }}{{ vm.org }}/{{ vm.name }}-root ip=
                            {%- if vm.connection_ip|default(vm['interfaces'][0]['ip']) is defined %}
                              {{- vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('address') }}:::
                              {{- vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('netmask') }}::eth0
                            {%- else %}::::::dhcp{% endif %}"
-{% elif vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" and vm.cmdline is not defined %}
+{% elif vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" and vm.cmdline is not defined and xen_vman_default_cmdline is not defined %}
 cmdline                 = "root=/dev/xvda rootfstype={{ vm.filesystem|default(xen_vman_default_filesystem) }} rw"
 {% else %}
 cmdline                 = "{{ vm.cmdline|default(xen_vman_default_cmdline) }}"

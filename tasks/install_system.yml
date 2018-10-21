@@ -6,6 +6,10 @@
   changed_when: "'invalid domain' not in xl_destroy.stderr"
   when: vm_config_file.stat.exists
 
+- name: Reset failed state for vm {{ vm.name }} @{{ vm.org }}
+  shell: systemctl reset-failed vm@{{ vm.org }}/{{ vm.name }}.service
+  changed_when: False
+
 - name: Make sure VM ({{ vm.name }} @{{ vm.org }}) is stopped
   systemd:
     name: vm@{{ vm.org }}/{{ vm.name }}.service

@@ -9,12 +9,20 @@ galaxy_info:
   min_ansible_version: 2.4
 
   platforms:
+    - name: Debian
+      versions:
+        - squeeze
+        - wheezy
+        - jessie
+        - stretch
     - name: Ubuntu
       versions:
         - xenial
         - yakkety
         - zesty
         - artful
+        - bionic
+        - cosmic
 
   galaxy_tags:
     - xen

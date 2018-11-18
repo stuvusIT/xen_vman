@@ -8,6 +8,7 @@
 
 - name: Reset failed state for vm {{ vm.name }} @{{ vm.org }}
   shell: systemctl reset-failed vm@{{ vm.org }}/{{ vm.name }}.service
+  ignore_errors: yes
   changed_when: False
 
 - name: Make sure VM ({{ vm.name }} @{{ vm.org }}) is stopped

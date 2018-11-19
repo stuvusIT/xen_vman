@@ -1,10 +1,9 @@
 ---
 - name: Install all required packages
   apt:
-    name: "{{ item }}"
-  with_items:
-    - open-iscsi
-    - sed
-    - debianutils
-    - nfs-common
-    - debootstrap
+    name:
+      - open-iscsi
+      - sed
+      - debianutils
+      - nfs-common
+      - debootstrap

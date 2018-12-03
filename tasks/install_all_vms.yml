@@ -10,6 +10,8 @@
   register: creation_date
   when: vm_config_file.stat.exists and not vm.reinstall|default(False)
   changed_when: False
+  args:
+    warn: false
 
 - name: Get old creation date from {{ vm.name }} @{{ vm.org }} (2/2)
   set_fact:

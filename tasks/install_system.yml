@@ -35,6 +35,7 @@
 # using shell module here since there is no beautiful way to delete all files and directory inside a given path, without removing the path itself
 - name: Remove old system on VM {{ vm.name }} @{{ vm.org }}
   shell: rm -rf /mnt/vms/{{ vm.org }}-{{ vm.name }}/*
+  warn: False
   when: ( vm.reinstall|default(False) or vm_config_file.stat.exists ) and vm.storage_type|default(xen_vman_default_storage_type) != "iscsi"
 
 - name: Install {{ vm.os.type }} {{ vm.os.version }} at {{ vm.name }} @{{ vm.org }}

@@ -14,3 +14,10 @@
     path: /etc/xen/xl.conf
   when: xen_vman_default_network_bridge is defined
 
+- name: Replace default vif-openvswitch script
+  template:
+    dest: /etc/xen/scripts/vif-openvswitch
+    group: root
+    owner: root
+    mode: 0655
+    src: vif-openvswitch.j2

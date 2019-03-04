@@ -29,6 +29,12 @@ Does a login or a logout for the iSCSI root disk for the given VM, this is only 
 Mount or umount the root filesystem from the given VM. For example `systemd start vm_mount@stuvus-web02` mounts the root filesystem of _web01 @stuvus_ into `/mnt/vms/stuvus-web01`. The mount point is automated created and removed.
 
 
+## nfs vms
+
+All nfs exports need to be accessible on the hypervisor and for the accordingly vm. The exported path for the root filesystem must be following schema:
+`{{ xen_vman_nfsroot_base }}/<vm name>-root` .
+
+
 ## Role Variables
 
 | Name                                     | Type                           |                      Default/Required [¹](#__required)                     | Description                                                                                                                           |

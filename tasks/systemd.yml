@@ -14,6 +14,15 @@
     owner: root
     mode: 0644
     src: vm_iscsi@.service.j2
+  when: xen_vman_iscsi_base_wwn is defined and xen_vman_iscsi_server is defined
+
+- name: Create xen config path {{ xen_vman_vm_config_path }}
+  file:
+    path: "{{ xen_vman_vm_config_path }}"
+    state: directory
+    group: root
+    owner: root
+    mode: 0755
 
 - name: Create listing folder for all vms requiring iSCSI (needed for selective vm_iscsi@.service starts)
   file:
@@ -22,6 +31,7 @@
     group: root
     owner: root
     mode: 0755
+  when: xen_vman_iscsi_base_wwn is defined and xen_vman_iscsi_server is defined
 
 - name: Install mount helper script
   template:

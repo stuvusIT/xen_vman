@@ -2,8 +2,13 @@
 - name: Install all required packages
   apt:
     name:
-      - open-iscsi
       - sed
       - debianutils
       - nfs-common
       - debootstrap
+
+- name: Install iSCSI packages
+  apt:
+    name:
+      - open-iscsi
+  when: xen_vman_iscsi_base_wwn is defined and xen_vman_iscsi_server is defined

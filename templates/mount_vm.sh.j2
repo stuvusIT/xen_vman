@@ -14,6 +14,7 @@
 # At least one of -m or -u must be given
 # Either both of -o and -h or -s must be given
 
+{% if xen_vman_iscsi_base_wwn is defined and xen_vman_iscsi_server is defined %}
 function mount_iscsi() {
 	local blk_dev="/dev/disk/by-path/ip-{{ xen_vman_iscsi_server }}-iscsi-{{ xen_vman_iscsi_base_wwn }}:$vm-lun-0"
 
@@ -36,6 +37,7 @@ function mount_iscsi() {
 	}
 	mount -v -o "defaults,rw" "$blk_dev" "$mount_path"
 }
+{% endif %}
 
 function mount_nfs() {
 	org="$(sed -n 's/^# [-_a-zA-Z0-9]\+ @//p' "$config_path")"
@@ -106,12 +108,14 @@ case "$action $(detect_storage_type)" in
 		echo "ERROR:   Failed to mount nfs storage for '$vm'"
 		;;
 
+{% if xen_vman_iscsi_base_wwn is defined and xen_vman_iscsi_server is defined %}
 	"mount iscsi")
 		mount_iscsi && exit 0 || err=$?
 		echo "ERROR:   Failed to mount iscsi storage for '$vm'"
 		;;
 
 	"umount iscsi" |\
+{% endif %}
 	"umount nfs")
 		umount "$mount_path" || err=$?
 		[ -f "/tmp/.$vm.iscsi_started_by_mount_script" ] && { # logout iscsi, when started by script (see func:mount_iscsi for future reference)

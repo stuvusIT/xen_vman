@@ -2,8 +2,10 @@
 [Unit]
 Description             = Mounts rootfs for VM %i
 Documentation           = https://github.com/stuvusIT/xen_vman
+{% if xen_vman_iscsi_base_wwn is defined and xen_vman_iscsi_server is defined %}
 Requires                = vm_iscsi@%i.service
 After                   = vm_iscsi@%i.service
+{% endif %}
 Conflicts               = vm@%i.service
 ConditionPathExists     = {{ xen_vman_vm_config_path }}/%i.cfg
 

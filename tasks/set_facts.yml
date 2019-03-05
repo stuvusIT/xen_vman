@@ -14,13 +14,13 @@
 - name: Get correct path for iscsiadm if needed
   shell: which iscsiadm
   register: xen_vman_iscsiadm_path
-  when: xen_vman_iscsiadm_path is not defined
+  when: xen_vman_iscsiadm_path is not defined and xen_vman_iscsi_base_wwn is defined and xen_vman_iscsi_server is defined
   changed_when: False
 
 - name: Set correct path for iscsiadm if needed
   set_fact:
     xen_vman_iscsiadm_path: "{{ xen_vman_iscsiadm_path.stdout }}"
-  when: xen_vman_iscsiadm_path.stdout is defined
+  when: xen_vman_iscsiadm_path.stdout is defined and xen_vman_iscsi_base_wwn is defined and xen_vman_iscsi_server is defined
   changed_when: False
 
 - name: Get currently running kernel

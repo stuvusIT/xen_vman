@@ -32,7 +32,7 @@ Mount or umount the root filesystem from the given VM. For example `systemd star
 ## nfs vms
 
 All nfs exports need to be accessible on the hypervisor and for the accordingly vm. The exported path for the root filesystem must be following schema:
-`{{ xen_vman_nfsroot_base }}/<vm name>/<vm name>-root` .
+`{{ xen_vman_nfsroot_base }}/<org name>/<vm name>-root` .
 
 
 ## Role Variables

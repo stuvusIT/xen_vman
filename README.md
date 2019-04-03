@@ -81,12 +81,20 @@ The exported path for the root filesystem must be of the following scheme:
 | `xen_vman_default_additonal_xen_options` | xl.cfg key value dict          |                                    `[]`                                    | Add additional Xen options                                                                                                            |
 | `xen_vman_default_auto_install`          | boolean                        |                                   `True`                                   | Install specified OS automatically, when no xen configuration is found                                                                |
 | `xen_vman_default_network_script`        | string                         |                                `vif-bridge`                                | Default xen-script used to setup vm network interfaces, for valid values see `ls /etc/xen/scripts/vif*` on the hypervisor             |
-| `xen_vman_default_network_bridge`        | string                         |       _required for some `xen_vman_default_network_bridge` settings_       | Default network bridge to use for vm network interfaces                                                                               |
+| `xen_vman_default_network_bridge`        | string                         |       _required for some `xen_vman_default_network_bridge` settings_       | [Default network bridge](#default-network-bridge) to use for vm network interfaces                                                    |
+| `xen_vman_lazy_default_network_bridge`   | string                         |                               _not required_                               | [Default network bridge](#default-network-bridge) (lazily evaluated)                                                                  |
 
 
 <a id="__required">¹</a> Variable is not required unless no default is given or other specified
 <a id="xen_doc">²</a> For further reference see [man xl.cfg](http://xenbits.xen.org/docs/4.8-testing/man/xl.cfg.5.html)
 
+### Default network bridge
+
+`xen_vman_default_network_bridge` is written to Xen's config file, while
+`xen_vman_lazy_default_network_bridge` is lazily evaluated in order to default the `bridge` of
+[VM interfaces](#vm-interfaces).
+Therefore you can access the [VM variables](#vm-variables) from within
+`xen_vman_lazy_default_network_bridge`.
 
 ### VM variables
 

@@ -6,9 +6,10 @@ auto eth0
 iface eth0 inet {% if vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" %}static{% else %}manual{% endif %}
 
 	address {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('address') }}
-	network {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('network') }}
 	netmask {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('netmask') }}
+{% if vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('broadcast') != None %}
 	broadcast {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('broadcast') }}
+{% endif %}
 	dns-nameservers {{ vm.nameserver|default(xen_vman_default_nameserver)|join(' ') }}
 {% if network_management_default_mtu is defined or vm['interfaces'][0]['mtu'] is defined %}
 	mtu {{ vm['interfaces'][0]['mtu']|default(network_management_default_mtu) }}

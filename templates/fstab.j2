@@ -15,3 +15,4 @@
 {%- endif %}
 
 {{ fmtstr|format(root_device, '/', filesystem, mount_options, pass_str) }}
+{{ fmtstr|format('tmpfs', '/tmp', 'tmpfs', 'nodev,nosuid', 0, 0) }}

@@ -11,8 +11,8 @@ iface eth0 inet {% if vm.storage_type|default(xen_vman_default_storage_type) == 
 	broadcast {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('broadcast') }}
 {% endif %}
 	dns-nameservers {{ vm.nameserver|default(xen_vman_default_nameserver)|join(' ') }}
-{% if network_management_default_mtu is defined or vm['interfaces'][0]['mtu'] is defined %}
-	mtu {{ vm['interfaces'][0]['mtu']|default(network_management_default_mtu) }}
+{% if xen_vman_default_mtu is defined or vm['interfaces'][0]['mtu'] is defined %}
+	mtu {{ vm['interfaces'][0]['mtu']|default(xen_vman_default_mtu) }}
 {% endif %}
 {% if vm.gateway|default(xen_vman_default_gateway) is defined %}
 	{% if vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" -%}

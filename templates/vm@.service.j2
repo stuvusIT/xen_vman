@@ -2,9 +2,9 @@
 [Unit]
 Description             = Xen VM for %i
 Documentation           = https://github.com/stuvusIT/xen_vman
-After                   = xend.service
+After                   = xen.service
 After                   = xenstored.service
-Requires                = xend.service
+Requires                = xen.service
 {% if xen_vman_iscsi_base_wwn is defined and xen_vman_iscsi_server is defined %}
 Requires                = vm_iscsi@%i.service
 After                   = vm_iscsi@%i.service

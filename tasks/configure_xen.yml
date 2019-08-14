@@ -21,3 +21,28 @@
     owner: root
     mode: 0655
     src: vif-openvswitch.j2
+
+- name: Create dracut kernel hooks
+  template:
+    src: "kernel-dracut-{{ item }}.j2"
+    dest: "/etc/kernel/{{ item }}.d/xen-dracut"
+    owner: root
+    group: root
+    mode: 0755
+  loop:
+    - postinst
+    - postrm
+  register: kernel_hook
+
+- name: Rebuild initrds for Xen
+  block:
+    - name: Discover kernels in /boot
+      find:
+        paths: /boot
+        patterns: "vmlinuz*"
+      register: kernels
+
+    - name: (Re)build initrds
+      command: "/etc/kernel/postinst.d/xen-dracut {{ item }}"
+      loop: "{{ kernels.files | map(attribute='path') | map('basename') | map('regex_replace', '^vmlinuz-(.*)$', '\\1') | list }}"
+  when: kernel_hook.results | selectattr('item', 'equalto', 'postinst') | map(attribute='changed') | list | first

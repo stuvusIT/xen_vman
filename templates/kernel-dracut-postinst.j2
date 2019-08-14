@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# {{ ansible_managed }}
+# Most of this code is stolen from the upstream dracut hook
+
+version="$1"
+
+[ -x /usr/bin/dracut ] || exit 0
+
+# passing the kernel version is required
+[ -z "${version}" ] && exit 0
+
+# avoid running multiple times
+if [ -n "$DEB_MAINT_PARAMS" ]; then
+	eval set -- "$DEB_MAINT_PARAMS"
+	if [ -z "$1" ] || [ "$1" != "configure" ]; then
+		exit 0
+	fi
+fi
+
+# we're good - create initramfs
+echo "dracut-xen: Generating /etc/xen/initrd.img-${version}"
+dracut -q -N --force -m "{{ xen_vman_dracut_modules | join(' ') }}" {{ xen_vman_dracut_extra_flags }} "/etc/xen/initrd.img-${version}" "${version}" >&2

@@ -14,6 +14,7 @@ ConditionPathExists     = {{ xen_vman_vm_config_path }}/%i.cfg
 
 [Service]
 Type                    = forking
+ExecStartPre            = /bin/sh -c "ln -sf /etc/xen/initrd.img-$(uname -r) /etc/xen/initrd.img"
 ExecStart               = {{ xen_vman_xl_path }} -v create {{ xen_vman_vm_config_path }}/%i.cfg
 ExecStop                = {{ xen_vman_xl_path }} -v shutdown -F -w %i
 TimeoutStartSec         = {{ xen_vman_start_timeout }}

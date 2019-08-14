@@ -2,10 +2,12 @@
 - name: Install all required packages
   apt:
     name:
-      - sed
       - debianutils
-      - nfs-common
       - debootstrap
+      - dracut
+      - dracut-network
+      - nfs-common
+      - sed
 
 - name: Install iSCSI packages
   apt:

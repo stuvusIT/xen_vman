@@ -1,6 +1,8 @@
 ---
 xen_vman_vms:                           []
 xen_vman_vm_config_path:                /etc/xen/vms
+xen_vman_dracut_modules:                [ nfs, network, base, bash, systemd, terminfo, shutdown, kernel-modules, kernel-network-modules, console-setup, systemd-initrd, dracut-systemd ]
+xen_vman_dracut_extra_flags:            ""
 
 xen_vman_start_timeout:                 15
 xen_vman_stop_timeout:                  300
@@ -23,6 +25,7 @@ xen_vman_default_filesystem:            ext4
 xen_vman_default_boot_after_creation:   True
 xen_vman_default_auto_boot:             True
 xen_vman_default_builder:               generic
+xen_vman_default_initrd:                /etc/xen/initrd.img
 xen_vman_default_spice:                 False
 xen_vman_default_spicehost:             0.0.0.0
 xen_vman_default_spiceport:             3100

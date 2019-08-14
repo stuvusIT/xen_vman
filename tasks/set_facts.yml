@@ -32,8 +32,3 @@
   set_fact:
     xen_vman_default_kernel: /boot/vmlinuz-{{ xen_vman_host_kernel.stdout }}
   when: xen_vman_default_kernel is not defined
-
-- name: Set VM initrd to currently used initrd if not specifed
-  set_fact:
-    xen_vman_default_initrd: /boot/initrd.img-{{ xen_vman_host_kernel.stdout }}
-  when: xen_vman_default_initrd is not defined

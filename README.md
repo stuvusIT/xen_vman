@@ -7,6 +7,7 @@ Currently, iSCSI and NFS are completely supported as filesystem backends.
 For all other backends you manually need to install the system afterwards.
 
 For each installed kernel, a dracut initrd will automatically created at `/etc/xen/initrd.img-$VERSION` (similar to /boot initrds for dom0).
+When starting a VM. `/etc/xen/initrd.img` will automatically be created as a symlink, pointing to the initrd of the currently running kernel.
 
 
 ## Requirements
@@ -73,7 +74,7 @@ The exported path for the root filesystem must be of the following scheme:
 | `xen_vman_default_auto_boot`             | boolean                        | `True`                                                                                                                                | Start VM when hypervisor boots                                                                                                        |
 | `xen_vman_default_builder`               | string                         | `generic`                                                                                                                             | Select the domU guest type, valid values are `generic` (para virtualization) and `hvm` (all hardware is emulated)                     |
 | `xen_vman_default_kernel`                | string                         | **auto determined**                                                                                                                   | Path to the kernel to use for generic VMs                                                                                             |
-| `xen_vman_default_initrd`                | string                         | **auto determined**                                                                                                                   | Path to the initrd to use for generic VMs                                                                                             |
+| `xen_vman_default_initrd`                | string                         | `/etc/xen/initrd.img`                                                                                                                 | Path to the initrd to use for generic VMs                                                                                             |
 | `xen_vman_default_cmdline`               | string                         | _not required_                                                                                                                        | Command line to pass to the kernel, this option also disables auto generated kernel command lines                                     |
 | `xen_vman_default_spice`                 | boolean                        | `False`                                                                                                                               | Allow access to the display via the SPICE protocol [²](#xen_doc)                                                                      |
 | `xen_vman_default_spicehost`             | string (IP-Address)            | `0.0.0.0`                                                                                                                             | Specify the interface address to listen on if given, defaults to any interface [²](#xen_doc)                                          |

@@ -25,6 +25,7 @@ xen_vman_default_filesystem:            ext4
 xen_vman_default_boot_after_creation:   True
 xen_vman_default_auto_boot:             True
 xen_vman_default_builder:               generic
+xen_vman_default_initrd:                /etc/xen/initrd.img
 xen_vman_default_spice:                 False
 xen_vman_default_spicehost:             0.0.0.0
 xen_vman_default_spiceport:             3100

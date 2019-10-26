@@ -6,6 +6,7 @@
     owner: root
     mode: 0644
     src: vm@.service.j2
+    validate: systemd-analyze verify %s
   notify: Reload systemd daemon
 
 - name: Install systemd service file (vm_iscsi@.service)
@@ -15,6 +16,7 @@
     owner: root
     mode: 0644
     src: vm_iscsi@.service.j2
+    validate: systemd-analyze verify %s
   notify: Reload systemd daemon
   when: xen_vman_iscsi_base_wwn is defined and xen_vman_iscsi_server is defined
 
@@ -50,4 +52,5 @@
     owner: root
     mode: 0644
     src: vm_mount@.service.j2
+    validate: systemd-analyze verify %s
   notify: Reload systemd daemon

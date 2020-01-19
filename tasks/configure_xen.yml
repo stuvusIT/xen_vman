@@ -1,4 +1,11 @@
 ---
+- name: Install additional network scripts
+  copy:
+    src: files/{{ item }}
+    dest: /etc/xen/scripts/{{ item | basename }}
+    mode: 0755
+  loop: "{{ xen_vman_additional_network_scripts }}"
+
 - name: Set network default script
   lineinfile:
     line: "vif.default.script=\"{{ xen_vman_default_network_script }}\""

@@ -85,6 +85,7 @@ The exported path for the root filesystem must be of the following scheme:
 | `xen_vman_default_max_usb_redirections`  | integer (0-4)                  | `4`                                                                                                                                   | Enable SPICE USB redirections [²](#xen_doc)                                                                                           |
 | `xen_vman_default_additonal_xen_options` | xl.cfg key value dict          | `[]`                                                                                                                                  | Add additional Xen options                                                                                                            |
 | `xen_vman_default_auto_install`          | boolean                        | `True`                                                                                                                                | Install specified OS automatically, when no xen configuration is found                                                                |
+| `xen_vman_additional_network_scripts`    | list of strings                | `[]`                                                                                                                                  | List of [additional network scripts](#additional-network-scripts)                                                                     |
 | `xen_vman_default_network_script`        | string                         | `vif-bridge`                                                                                                                          | Default xen-script used to setup vm network interfaces, for valid values see `ls /etc/xen/scripts/vif*` on the hypervisor             |
 | `xen_vman_default_network_bridge`        | string                         | _required for some `xen_vman_default_network_bridge` settings_                                                                        | [Default network bridge](#default-network-bridge) to use for vm network interfaces                                                    |
 | `xen_vman_lazy_default_network_bridge`   | string                         | _not required_                                                                                                                        | [Default network bridge](#default-network-bridge) (lazily evaluated)                                                                  |
@@ -93,6 +94,47 @@ The exported path for the root filesystem must be of the following scheme:
 
 <a id="__required">¹</a> Variable is not required unless no default is given or other specified
 <a id="xen_doc">²</a> For further reference see [man xl.cfg](http://xenbits.xen.org/docs/4.8-testing/man/xl.cfg.5.html)
+
+### Additional network scripts
+
+This role currently supports a custom network script called `vif-p2p`.
+It is like (the official) `vif-route`, except that it configures the vif
+interface using a P2P configuration from dom0 to the guest.
+That is, if `vif-route` configures the interface like so:
+
+```bash
+ip address add 10.0.0.1/32 dev vif10.0
+ip route add 10.0.0.5/32 dev vif10.0 src 10.0.0.1
+```
+
+Then `vif-p2p` configures the interface like so instead:
+
+```bash
+ip address add 10.0.0.1/32 peer 10.0.0.5 dev vif10.0
+```
+
+This way, the kernel will automatically add the necessary route.
+
+In order to install `vif-p2p` you have to add the string `"vif-p2p"` to
+`xen_vman_additional_network_scripts`.
+
+#### Custom additional network scripts
+
+In order to install your own network script (that is not supplied by this role),
+you can add arbitrary paths to  `xen_vman_additional_network_scripts`.
+Relative paths are relative to your `files` folder.
+Only the file name is preserved:
+For example, adding `"xen_vman/vif-custom"` to
+`xen_vman_additional_network_scripts` will instruct this role to copy
+`files/xen_vman/vif-custom` (on localhost) to `/etc/xen/scripts/vif-custom`
+(on the remote host).
+
+For doing so, it is recommended to use a subfolder like `xen_vman`, as in the
+previous example.
+Otherwise your file name might collide with a supplied network script in a
+future version of this role.
+In the case of such a collision, the script supplied by this role takes
+precedence.
 
 ### Default network bridge
 

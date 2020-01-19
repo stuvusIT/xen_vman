@@ -88,6 +88,7 @@ The exported path for the root filesystem must be of the following scheme:
 | `xen_vman_default_network_script`        | string                         | `vif-bridge`                                                                                                                          | Default xen-script used to setup vm network interfaces, for valid values see `ls /etc/xen/scripts/vif*` on the hypervisor             |
 | `xen_vman_default_network_bridge`        | string                         | _required for some `xen_vman_default_network_bridge` settings_                                                                        | [Default network bridge](#default-network-bridge) to use for vm network interfaces                                                    |
 | `xen_vman_lazy_default_network_bridge`   | string                         | _not required_                                                                                                                        | [Default network bridge](#default-network-bridge) (lazily evaluated)                                                                  |
+| `xen_vman_default_xen_str`               | string                         | _not required_                                                                                                                        | Default for [`xen_str`](#vm-interfaces)                                                                                               |
 
 
 <a id="__required">¹</a> Variable is not required unless no default is given or other specified

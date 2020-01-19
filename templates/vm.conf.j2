@@ -24,7 +24,7 @@ vif                     = [ {% for interface in vm.interfaces -%}
 	'mac={{- interface.mac -}}
 	{%- if interface.ip is defined -%},ip={{- interface.ip|ipaddr('address') -}}{%- endif -%}
 	{%- if interface.bridge | default(xen_vman_lazy_default_network_bridge) is defined -%},bridge={{- interface.bridge | default(xen_vman_lazy_default_network_bridge) -}}{%- endif -%}
-	{%- if interface.xen_str is defined -%},{{- interface.xen_str -}}{%- endif -%}'
+	{%- if interface.xen_str | default(xen_vman_default_xen_str) is defined -%},{{- interface.xen_str | default(xen_vman_default_xen_str) -}}{%- endif -%}'
 	{%- if not loop.last -%}, {% endif -%}{# check for last network interface #}
 {%- endfor %} ]
 

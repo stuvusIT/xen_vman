@@ -22,26 +22,26 @@ dir=$(dirname "$0")
 main_ip=$(dom0_ip)
 
 case "${command}" in
-    online)
-        ifconfig ${dev} up
+    online|add)
+        ip link set dev ${dev} up
         echo 1 >/proc/sys/net/ipv4/conf/${dev}/proxy_arp
-        ipcmd='add'
-        cmdprefix=''
+        # Prerequisites: https://wiki.xenproject.org/wiki/Xen_Networking#Emulated_Network_Devices
+        #
+        # In the case of an emulated network device, Xen calls this script
+        # once with `dev=vifDOMID.DEVID` and once with `dev=vifDOMID.DEVID-emu`.
+        # Thereby $INTERFACE contains the name of the interface that will be
+        # used. Normally $INTERFACE is not set. Therefore, in any case
+        # ${INTERFACE:-$dev} contains the interface that will be used.
+        if [ "${dev}" = "${INTERFACE:-$dev}" ] ; then
+            for addr in ${ip} ; do
+                ip address add ${main_ip} peer ${addr} dev ${dev}
+            done
+        fi
         ;;
     offline)
-        do_without_error ifdown ${dev}
-        ipcmd='del'
-        cmdprefix='do_without_error'
+        do_without_error ip link set dev ${dev} down
         ;;
 esac
-
-if [ "${ip}" ] ; then
-    # If we've been given a list of IP addresses, then add P2P links from dom0 to
-    # the guest using those addresses.
-    for addr in ${ip} ; do
-      ${cmdprefix} ip address ${ipcmd} ${main_ip} peer ${addr} dev ${dev}
-    done
-fi
 
 handle_iptable
 

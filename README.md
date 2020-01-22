@@ -90,6 +90,7 @@ The exported path for the root filesystem must be of the following scheme:
 | `xen_vman_default_network_bridge`        | string                         | _required for some `xen_vman_default_network_bridge` settings_                                                                        | [Default network bridge](#default-network-bridge) to use for vm network interfaces                                                    |
 | `xen_vman_lazy_default_network_bridge`   | string                         | _not required_                                                                                                                        | [Default network bridge](#default-network-bridge) (lazily evaluated)                                                                  |
 | `xen_vman_default_xen_str`               | string                         | _not required_                                                                                                                        | Default for [`xen_str`](#vm-interfaces)                                                                                               |
+| `xen_vman_default_vifname_prefix`        | string                         | _not required_                                                                                                                        | Default for [`vifname`](#vm-interfaces)                                                                                               |
 
 
 <a id="__required">¹</a> Variable is not required unless no default is given or other specified
@@ -193,9 +194,15 @@ All of them are optional.
 | `mac`     | `string`  | MAC address of this interface                |
 | `mtu`     | `integer` | MTU of this interface                        |
 | `bridge`  | `string`  | Bridge to attach the interface to            |
+| `vifname` | `string`  | Name of the vif on dom0                      |
 | `xen_str` | `string`  | Additional Xen parameters for this interface |
 
-
+Note that if you use `xen_vman_default_vifname_prefix` (and don't overwrite
+it using the `vifname` option), then `.DEVID` is appended to the vif name,
+whereby `DEVID` is the index of the interface.
+(Hence the name `..._prefix`.)
+For example, when using `xen_vman_default_vifname_prefix: "example"`, then
+the vifs are named `example.0`, `example.1` and so on.
 
 ## Example Playbook
 

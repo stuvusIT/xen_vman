@@ -22,21 +22,12 @@ dir=$(dirname "$0")
 main_ip=$(dom0_ip)
 
 case "${command}" in
-    online|add)
+    online)
         ip link set dev ${dev} up
         echo 1 >/proc/sys/net/ipv4/conf/${dev}/proxy_arp
-        # Prerequisites: https://wiki.xenproject.org/wiki/Xen_Networking#Emulated_Network_Devices
-        #
-        # In the case of an emulated network device, Xen calls this script
-        # once with `dev=vifDOMID.DEVID` and once with `dev=vifDOMID.DEVID-emu`.
-        # Thereby $INTERFACE contains the name of the interface that will be
-        # used. Normally $INTERFACE is not set. Therefore, in any case
-        # ${INTERFACE:-$dev} contains the interface that will be used.
-        if [ "${dev}" = "${INTERFACE:-$dev}" ] ; then
-            for addr in ${ip} ; do
-                ip address add ${main_ip} peer ${addr} dev ${dev}
-            done
-        fi
+        for addr in ${ip} ; do
+            ip address add ${main_ip} peer ${addr} dev ${dev}
+        done
         ;;
     offline)
         do_without_error ip link set dev ${dev} down

@@ -1,0 +1,45 @@
+#!/bin/bash
+#============================================================================
+# ${XEN_SCRIPT_DIR}/vif-p2p
+#
+# Script for configuring a vif in routed mode, but using P2P configuration
+# on the vif interface.
+#
+# Usage:
+# vif-p2p (add|remove|online|offline)
+#
+# Environment vars:
+# dev         vif interface name (required).
+# XENBUS_PATH path to this device's details in the XenStore (required).
+#
+# Read from the store:
+# ip      list of IPs for the vif, space-separated
+#============================================================================
+
+dir=$(dirname "$0")
+. "${dir}/vif-common.sh"
+
+main_ip=$(dom0_ip)
+
+case "${command}" in
+    online)
+        ip link set dev ${dev} up
+        echo 1 >/proc/sys/net/ipv4/conf/${dev}/proxy_arp
+        for addr in ${ip} ; do
+            ip address add ${main_ip} peer ${addr} dev ${dev}
+        done
+        ;;
+    offline)
+        do_without_error ip link set dev ${dev} down
+        ;;
+esac
+
+handle_iptable
+
+call_hooks vif post
+
+log debug "Successful vif-p2p ${command} for ${dev}."
+if [ "${command}" = "online" ]
+then
+  success
+fi

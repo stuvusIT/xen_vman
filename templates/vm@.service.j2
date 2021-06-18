@@ -4,7 +4,7 @@ Description             = Xen VM for %i
 Documentation           = https://github.com/stuvusIT/xen_vman
 After                   = xen.service
 After                   = xenstored.service
-Requires                = xen.service
+Wants                   = xen.service
 {% if xen_vman_iscsi_base_wwn is defined and xen_vman_iscsi_server is defined %}
 Requires                = vm_iscsi@%i.service
 After                   = vm_iscsi@%i.service

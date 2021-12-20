@@ -23,10 +23,17 @@ main_ip=$(dom0_ip)
 
 case "${command}" in
     online)
+        echo 1 >/proc/sys/net/ipv6/conf/${dev}/addr_gen_mode # https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt
         ip link set dev ${dev} up
-        echo 1 >/proc/sys/net/ipv4/conf/${dev}/proxy_arp
+        ip address add fe80::1/64 dev ${dev}
         for addr in ${ip} ; do
-            ip address add ${main_ip} peer ${addr} dev ${dev}
+            if [[ $addr =~ .*:.* ]]; then
+                # IPv6
+                ip route add ${addr} dev ${dev}
+            else
+                # IPv4
+                ip address add ${main_ip} peer ${addr} dev ${dev}
+            fi
         done
         ;;
     offline)

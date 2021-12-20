@@ -189,8 +189,9 @@ Each network interface may have the following options.
 All of them are optional.
 
 | Name      | Type      | Description                                  |
-|-----------|-----------|----------------------------------------------|
-| `ip`      | `string`  | IP address of this interface                 |
+| --------- | --------- | -------------------------------------------- |
+| `ip`      | `string`  | IPv4 address of this interface               |
+| `ipv6`    | `string`  | IPv6 address of this interface               |
 | `mac`     | `string`  | MAC address of this interface                |
 | `mtu`     | `integer` | MTU of this interface                        |
 | `bridge`  | `string`  | Bridge to attach the interface to            |
@@ -214,6 +215,7 @@ the vifs are named `example.0`, `example.1` and so on.
         - name: testvm
           interfaces:
           - ip: 10.0.0.15
+            ipv6: fd76:5eac:234:70c8::15
             mac: 00:14:22:01:23:45
             bridge: mybridge
             os:

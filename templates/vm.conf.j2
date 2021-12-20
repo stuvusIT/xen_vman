@@ -21,8 +21,9 @@ vcpus                   = {{ vm.vcpus|default(xen_vman_default_vcpus) }}
 cpus                    = "{{ vm.cpu_str|default(xen_vman_default_cpu_str) }}"
 
 vif                     = [ {% for interface in vm.interfaces -%}
+	{%- set ips = [ interface.ip | default(None), interface.ipv6 | default(None) ] | select('string') -%}
 	'mac={{- interface.mac -}}
-	{%- if interface.ip is defined -%},ip={{- interface.ip|ipaddr('address') -}}{%- endif -%}
+	{%- if ips != [] -%},ip={{- ips | join(' ') -}}{%- endif -%}
 	{%- if interface.bridge | default(xen_vman_lazy_default_network_bridge) is defined -%},bridge={{- interface.bridge | default(xen_vman_lazy_default_network_bridge) -}}{%- endif -%}
 	{%- if interface.vifname | default(xen_vman_default_vifname_prefix) is defined -%},vifname={{ interface.vifname | default(xen_vman_default_vifname_prefix + '.' + loop.index0 | string) }}{%- endif -%}
 	{%- if interface.xen_str | default(xen_vman_default_xen_str) is defined -%},{{- interface.xen_str | default(xen_vman_default_xen_str) -}}{%- endif -%}'

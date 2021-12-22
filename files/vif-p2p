@@ -29,7 +29,7 @@ case "${command}" in
         for addr in ${ip} ; do
             if [[ $addr =~ .*:.* ]]; then
                 # IPv6
-                ip route add ${addr} dev ${dev}
+                ip route add ${addr} via fe80::2 dev ${dev}
             else
                 # IPv4
                 ip address add ${main_ip} peer ${addr} dev ${dev}

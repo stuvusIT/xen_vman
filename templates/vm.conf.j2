@@ -21,7 +21,7 @@ vcpus                   = {{ vm.vcpus|default(xen_vman_default_vcpus) }}
 cpus                    = "{{ vm.cpu_str|default(xen_vman_default_cpu_str) }}"
 
 vif                     = [ {% for interface in vm.interfaces -%}
-	{%- set ips = [ interface.ip | default(None), interface.ipv6 | default(None) ] | select('string') -%}
+	{%- set ips = [ interface.ip | default(None), interface.ipv6 | default(None) ] | select('string') | map('ansible.netcommon.ipaddr', 'address') -%}
 	'mac={{- interface.mac -}}
 	{%- if ips != [] -%},ip={{- ips | join(' ') -}}{%- endif -%}
 	{%- if interface.bridge | default(xen_vman_lazy_default_network_bridge) is defined -%},bridge={{- interface.bridge | default(xen_vman_lazy_default_network_bridge) -}}{%- endif -%}

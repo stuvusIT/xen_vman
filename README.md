@@ -101,20 +101,21 @@ The exported path for the root filesystem must be of the following scheme:
 This role currently supports a custom network script called `vif-p2p`.
 It is like (the official) `vif-route`, except that it configures the vif
 interface using a P2P configuration from dom0 to the guest.
-That is, if `vif-route` configures the interface like so:
+
+`vif-p2p` supports IPv6.
+To use this IPv6 feature, you must yourself configure your VMs to use the link-local address `fe80::2/64` and gateway `fe80::1` on `eth0`.
+Those link-local addresses are fixed and are the same for all VMs.
+
+That is, `vif-p2p` automatically configures the interface on the host like
 
 ```bash
-ip address add 10.0.0.1/32 dev vif10.0
-ip route add 10.0.0.5/32 dev vif10.0 src 10.0.0.1
+ip address add 10.0.0.1/32 peer 10.0.0.10 dev vif10.0
+ip address add fe80::1/64 dev vif10.0
+ip route add 2001:DB8::10/128 via fe80::2 dev vif10.0
 ```
 
-Then `vif-p2p` configures the interface like so instead:
-
-```bash
-ip address add 10.0.0.1/32 peer 10.0.0.5 dev vif10.0
-```
-
-This way, the kernel will automatically add the necessary route.
+if `10.0.0.1` is the main IP of the hypervisor, `10.0.0.10` is the `ip` of the first [VM interface](#vm-interfaces) and `2001:DB8::10` is the `ipv6` of the first [VM interface](#vm-interfaces).
+(For IPv4, the kernel will automatically add the necessary route.)
 
 In order to install `vif-p2p` you have to add the string `"vif-p2p"` to
 `xen_vman_additional_network_scripts`.

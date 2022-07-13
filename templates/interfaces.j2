@@ -5,10 +5,10 @@ source-directory /etc/network/interfaces.d
 auto eth0
 iface eth0 inet {% if vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" %}static{% else %}manual{% endif %}
 
-	address {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('address') }}
-	netmask {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('netmask') }}
-{% if vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('broadcast') != None %}
-	broadcast {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('broadcast') }}
+	address {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ansible.utils.ipaddr('address') }}
+	netmask {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ansible.utils.ipaddr('netmask') }}
+{% if vm.connection_ip|default(vm['interfaces'][0]['ip'])|ansible.utils.ipaddr('broadcast') != None %}
+	broadcast {{ vm.connection_ip|default(vm['interfaces'][0]['ip'])|ansible.utils.ipaddr('broadcast') }}
 {% endif %}
 	dns-nameservers {{ vm.nameserver|default(xen_vman_default_nameserver)|join(' ') }}
 {% if xen_vman_default_mtu is defined or vm['interfaces'][0]['mtu'] is defined %}

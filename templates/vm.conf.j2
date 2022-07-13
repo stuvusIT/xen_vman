@@ -46,8 +46,8 @@ kernel                  = "{{ vm.kernel|default(xen_vman_default_kernel) }}"
 cmdline                 = "root=/dev/nfs nfsroot=
                            {{- xen_vman_nfsroot_base }}{{ vm.org }}/{{ vm.name }}-root ip=
                            {%- if vm.connection_ip|default(vm['interfaces'][0]['ip']) is defined %}
-                             {{- vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('address') }}:::
-                             {{- vm.connection_ip|default(vm['interfaces'][0]['ip'])|ipaddr('netmask') }}::eth0
+                             {{- vm.connection_ip|default(vm['interfaces'][0]['ip'])|ansible.utils.ipaddr('address') }}:::
+                             {{- vm.connection_ip|default(vm['interfaces'][0]['ip'])|ansible.utils.ipaddr('netmask') }}::eth0
                            {%- else %}::::::dhcp{% endif %}"
 {% elif vm.storage_type|default(xen_vman_default_storage_type) == "iscsi" and vm.cmdline is not defined and xen_vman_default_cmdline is not defined %}
 cmdline                 = "root=/dev/xvda rootfstype={{ vm.filesystem|default(xen_vman_default_filesystem) }} rw"

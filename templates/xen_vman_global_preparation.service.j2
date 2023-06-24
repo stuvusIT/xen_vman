@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+[Unit]
+Description             = Xen Vman Global Preparation
+Documentation           = https://github.com/stuvusIT/xen_vman
+
+[Service]
+Type                    = oneshot
+ExecStart               = bash /usr/local/bin/xen_vman_global_preparation.sh
+TimeoutSec              = {{ xen_vman_global_preparations_timeout }}
+
+[Install]
+WantedBy                = multi-user.target

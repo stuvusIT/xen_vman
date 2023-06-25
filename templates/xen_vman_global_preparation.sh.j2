@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# {{ ansible_managed }}
+
+ln -sf /etc/xen/initrd.img-$(uname -r) /etc/xen/initrd.img
+
+{% for command in xen_vman_additional_global_prepare %}
+{{ command }}
+{% endfor %}

@@ -20,4 +20,4 @@ fi
 
 # we're good - create initramfs
 echo "dracut-xen: Generating /etc/xen/initrd.img-${version}"
-dracut -q -N --force -m "{{ xen_vman_dracut_modules | join(' ') }}" {{ xen_vman_dracut_extra_flags }} "/etc/xen/initrd.img-${version}" "${version}" >&2
+dracut -N --force -m "{{ xen_vman_dracut_modules | join(' ') }}" {{ xen_vman_dracut_extra_flags }} "/etc/xen/initrd.img-${version}" "${version}" >&2
